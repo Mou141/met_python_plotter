@@ -121,9 +121,12 @@ class SignificantWeather(enum.IntEnum):
     THUNDER = 30
 
     @classmethod
-    def from_returned_str(cls, s: str) -> typing.Self:
-        """The API returns an integer in string format."""
-        return cls(int(s))
+    def from_returned_str(cls, s: str) -> typing.Optional[typing.Self]:
+        """The API returns an integer in string format (or 'NA' for if not available)."""
+        if s == "NA":
+            return None
+        else:
+            return cls(int(s))
 
 
 class Visibility(enum.StrEnum):
@@ -167,7 +170,7 @@ class WindDirection(enum.StrEnum):
 @dataclass(frozen=True)
 class ForecastRep:
     ultraviolet: int
-    significant_weather: SignificantWeather
+    significant_weather: typing.Optional[SignificantWeather]
     visibility: Visibility | int
     temperature: float
     wind_speed: float
