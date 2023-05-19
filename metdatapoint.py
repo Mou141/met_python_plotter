@@ -70,7 +70,7 @@ class Period(enum.StrEnum):
 
     @classmethod
     def from_returned_str(cls, s: str) -> typing.Self | int:
-        """The API can return a number of minutes after a midnight or a string ('Day' or 'Night') to describe the forecast period.
+        """The API can return a number of minutes after midnight or a string ('Day' or 'Night') to describe the forecast period.
         This function will handle either possibility."""
         try:
             return int(s)
