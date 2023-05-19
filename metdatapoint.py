@@ -42,7 +42,7 @@ class ForecastLocation(SiteInfo):
     continent: str
 
     # This is optional because the API returns it but it's not specified in the documentation
-    elevation: typing.Optional(float) = None
+    elevation: typing.Optional[float] = None
 
     @classmethod
     def from_dict(cls, d: dict[str, str]) -> typing.Self:
