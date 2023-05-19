@@ -200,6 +200,22 @@ class ForecastRep:
             period=Period.from_returned_str(d["$"]),
         )
 
+@dataclass(frozen=True)
+class Forecast:
+    location: ForecastLocation
+    forecast_type: str
+    forecast_date: date
+    forecast_reps: list[ForecastRep]
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str | list[dict[str, str] | list[dict[str, str]]]]) -> typing.Self:
+        """Converts the dictionary returned by the forecast API (under ['DV']['Location']) to an instance of this class."""
+        cls(
+            location=ForecastLocation.from_dict(d),
+            forecast_type=d["type"],
+            forecast_date=date.fromisoformat(d["Period"]["value"]),
+            forecast_reps=[ForecastRep.from_dict(r) for r in d["Period"]["Reps"]],
+        )
 
 class METDataPoint:
     """Downloads data from the MET DataPoint API.
