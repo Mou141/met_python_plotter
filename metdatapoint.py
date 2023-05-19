@@ -200,6 +200,7 @@ class ForecastRep:
             period=Period.from_returned_str(d["$"]),
         )
 
+
 @dataclass(frozen=True)
 class Forecast:
     location: ForecastLocation
@@ -208,7 +209,9 @@ class Forecast:
     forecast_reps: list[ForecastRep]
 
     @classmethod
-    def from_dict(cls, d: dict[str, str | list[dict[str, str] | list[dict[str, str]]]]) -> typing.Self:
+    def from_dict(
+        cls, d: dict[str, str | list[dict[str, str] | list[dict[str, str]]]]
+    ) -> typing.Self:
         """Converts the dictionary returned by the forecast API (under ['DV']['Location']) to an instance of this class."""
         cls(
             location=ForecastLocation.from_dict(d),
@@ -216,6 +219,7 @@ class Forecast:
             forecast_date=date.fromisoformat(d["Period"]["value"]),
             forecast_reps=[ForecastRep.from_dict(r) for r in d["Period"]["Reps"]],
         )
+
 
 class METDataPoint:
     """Downloads data from the MET DataPoint API.
@@ -283,7 +287,7 @@ class METDataPoint:
         res: Resolution | str,
         location_id: int | str,
         time: typing.Optional[datetime | str] = None,
-    ):
+    ) -> tuple[datetime, Forecast]:
         """Returns forecasts for a specific location (or all locations if "all" is passed) at either daily or three-hourly resolution (as specified by the res parameter).
         To get a specific forecast, specify the time parameter."""
         params = {"key": self.key, "res": res}
@@ -303,3 +307,6 @@ class METDataPoint:
         j = r.json()
 
         data_date = datetime.fromisoformat(j["SiteRep"]["DV"]["dataDate"])
+        forecast = Forecast.from_dict(j["SiteRep"]["DV"]["Location"])
+
+        return data_date, forecast
