@@ -170,7 +170,7 @@ class WindDirection(enum.StrEnum):
 @dataclass(frozen=True)
 class ForecastRep:
     ultraviolet: int
-    significant_weather: typing.Optional[SignificantWeather]
+    significant_weather: typing.Optional[SignificantWeather] = None
     visibility: Visibility | int
     temperature: float
     wind_speed: float
