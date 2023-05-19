@@ -197,6 +197,7 @@ class ForecastRep:
             period=Period.from_returned_str(d["$"]),
         )
 
+
 class METDataPoint:
     """Downloads data from the MET DataPoint API.
 
