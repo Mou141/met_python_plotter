@@ -220,7 +220,7 @@ class ThreeHourlyForecastRep(BaseForecastRep):
             else None,  # No UV index at night
             weather_type=SignificantWeather.from_returned_str(d["W"]),
             precipitation_probability=float(d["Pp"]),
-            period=timedelta(seconds=float(d["$"])),
+            period=timedelta(minutes=float(d["$"])),
         )
 
 
