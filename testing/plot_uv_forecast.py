@@ -53,21 +53,21 @@ def extract_uv_indices(forecast: Forecast) -> tuple[list[date], list[int]]:
     return dates, indices
 
 
-def plot_graph(dates: list[date], uv_indices: list[int], location_id: int):
+def plot_graph(dates: list[date], uv_indices: list[int], location: str):
     """Plots the UV data on a graph and displays it."""
 
     # Label axes
     plt.xlabel("Date")
     plt.ylabel("Maximum UV Index")
 
-    plt.title(f"UV Forecast for Location {location_id}")
+    plt.title(f"UV Forecast for {location}")
 
     # Set appropriate y limits for UV indices
     plt.ylim(0, 12)
 
     # Make sure there's a majors tick for every index
     plt.yticks(range(0, 13))
-    
+
     plt.plot([d.isoformat() for d in dates], uv_indices, "ro")
 
     plt.show()
@@ -90,7 +90,9 @@ def main(api_key: str, location_id: int):
 
     dates, uv_indices = extract_uv_indices(forecast)
 
-    plot_graph(dates, uv_indices, location_id)
+    plot_graph(
+        dates, uv_indices, f"{forecast.location.name} ({forecast.location.country})"
+    )
 
 
 if __name__ == "__main__":
