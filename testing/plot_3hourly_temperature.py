@@ -81,7 +81,8 @@ def plot_graph(temp_dict: dict[date, tuple[list[time], list[float]]], location: 
     fig.suptitle(f"Forecast Temperatures for {location}")
 
     # Rotate x-axis labels so that they're horizontal
-    fig.autofmt_xdate(rotation=90)
+    # Also centre labels relative to tick marks
+    fig.autofmt_xdate(rotation=90, ha="center")
 
     # y-axis is shared so only need to label one
     axes[0].set(ylabel="Temperature ($^\circ C$)")
@@ -89,9 +90,21 @@ def plot_graph(temp_dict: dict[date, tuple[list[time], list[float]]], location: 
     for d, a in zip(dates, axes):
         times, temps = temp_dict[d]
 
+        assert len(times) == len(
+            temps
+        ), f"Error: number of time values ({len(times)}) not equal to number of temperature values ({len(temps)})."
+
         a.set_title(d.isoformat())
 
         a.plot([t.strftime("%H:%M") for t in times], temps, "ro")
+
+        # If more than 3 labels on axis,
+        # Skip every other label so that they fit better
+        if len(times) > 3:
+            plt.setp(a.get_xticklabels()[1::2], visible=False)
+
+        # Set wider margins so that plot points don't overlap edge
+        a.margins(x=0.2)
 
     plt.show()
 
