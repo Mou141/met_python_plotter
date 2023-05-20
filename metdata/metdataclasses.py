@@ -263,7 +263,7 @@ class ForecastPeriod:
 @dataclass(frozen=True)
 class Forecast:
     location: ForecastLocation
-    periods: list[Period]
+    periods: list[ForecastPeriod]
 
     @classmethod
     def from_dict(
