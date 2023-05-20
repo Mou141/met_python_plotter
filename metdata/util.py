@@ -1,12 +1,18 @@
 """Utility functions for interacting with the MET DataPoint API."""
 from .metdataclasses import SiteInfo
 from math import radians, sin, cos, acos
+from datetime import datetime, date, time, timedelta, timezone
 
 EARTH_RADIUS = 6371.009  # km
 
 # sin and cos in degrees
 dsin = lambda d: sin(radians(d))
 dcos = lambda d: cos(radians(d))
+
+
+def get_3hourly_forecast_time(d: date, delta: timedelta) -> datetime:
+    """Takes a date of a 3hourly forecast and the time since midnight of the forecast and returns a datetime object representing the forecast time."""
+    return datetime.combine(d, time(0, 0, tzinfo=timezone.utc)) + delta
 
 
 def get_distance(lat1: float, long1: float, lat2: float, long2: float) -> float:
