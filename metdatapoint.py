@@ -68,15 +68,6 @@ class Period(enum.StrEnum):
     DAY = "Day"
     Night = "Night"
 
-    @classmethod
-    def from_returned_str(cls, s: str) -> typing.Self | int:
-        """The API can return a number of minutes after midnight or a string ('Day' or 'Night') to describe the forecast period.
-        This function will handle either possibility."""
-        try:
-            return int(s)
-        except ValueError:
-            return cls(s)
-
 
 class Visibility(enum.StrEnum):
     UNKNOWN = "UN"
@@ -168,56 +159,122 @@ class WindDirection(enum.StrEnum):
 
 
 @dataclass(frozen=True)
-class ForecastRep:
-    ultraviolet: int
-    significant_weather: typing.Optional[SignificantWeather]
-    visibility: Visibility | int
-    temperature: float
-    wind_speed: float
-    mean_pressure: float
-    precipitation: float
-    rel_humidity: float
-    wind_gust: float
-    feels_like_temp: float
+class BaseForecastRep:
+    visibility: Visibility
     wind_direction: WindDirection
-    period: Period | int
+    wind_speed: float
+    wind_gust: float
+    weather_type: typing.Optional[SignificantWeather]
+    max_uv_index: typing.Optional[int]
+    temperature: float
+    feels_like_temperature: float
+    precipitation_probability: float
+    relative_humidity: float
 
     @classmethod
     def from_dict(cls, d: dict[str, str]) -> typing.Self:
-        """Converts the dictionary returned by the DataPoint API to an instance of this class."""
+        """Gets the appropriate class to represent the 'Rep' objects for this type of forecast."""
+        raise NotImplementedError()
+
+
+@dataclass(frozen=True)
+class DailyForecastRep(BaseForecastRep):
+    period: Period
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Gets the appropriate class to represent the 'Rep' objects for this type of forecast."""
         return cls(
-            ultraviolet=int(d["U"]),
-            significant_weather=SignificantWeather.from_returned_str(d["W"]),
-            visibility=Visibility.from_returned_str(d["V"]),
-            temperature=float(d["T"]),
-            wind_speed=float(d["S"]),
-            mean_pressure=float(d["P"]),
-            precipitation=float(d["Pp"]),
-            rel_humidity=float(d["H"]),
-            wind_gust=float(d["G"]),
-            feels_like_temp=float(d["F"]),
+            feels_like_temperature=float(d.get("FDm", d.get("FNm"))),
+            temperature=float(d.get("Dm", d.get("Nm"))),
             wind_direction=WindDirection(d["D"]),
-            period=Period.from_returned_str(d["$"]),
+            wind_gust=float(d.get("Gn", d.get("Gm"))),
+            relative_humidity=float(d.get("Hn", d.get("Hm"))),
+            visibility=Visibility(d["V"]),
+            wind_speed=float(d["S"]),
+            max_uv_index=int(d["U"])
+            if ("U" in d.keys())
+            else None,  # No UV index at night
+            weather_type=SignificantWeather.from_returned_str(d["W"]),
+            precipitation_probability=float(d.get("PPd", d.get("PPn"))),
+            period=Period(d["$"]),
+        )
+
+
+@dataclass(frozen=True)
+class ThreeHourlyForecastRep(BaseForecastRep):
+    period: int
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Gets the appropriate class to represent the 'Rep' objects for this type of forecast."""
+        return cls(
+            feels_like_temperature=float(d["F"]),
+            wind_gust=float(d["G"]),
+            relative_humidity=float(d["H"]),
+            temperature=float(d["T"]),
+            visibility=Visibility(d["V"]),
+            wind_direction=WindDirection(d["D"]),
+            wind_speed=float(d["S"]),
+            max_uv_index=int(d["U"])
+            if ("U" in d.keys())
+            else None,  # No UV index at night
+            weather_type=SignificantWeather.from_returned_str(d["W"]),
+            precipitation_probability=float(d["Pp"]),
+            period=int(d["$"]),
+        )
+
+
+@dataclass(frozen=True)
+class ForecastPeriod:
+    type: str
+    forecast_date: date
+    reps: list[DailyForecastRep | ThreeHourlyForecastRep]
+
+    @staticmethod
+    def get_rep_class(
+        res: Resolution | str,
+    ) -> typing.Type[DailyForecastRep] | typing.Type[ThreeHourlyForecastRep]:
+        """Gets the appropriate class to represent the 'Rep' objects for this type of forecast."""
+        if res == Resolution.DAILY:
+            return DailyForecastRep
+        elif res == Resolution.THREE_HOURLY:
+            return ThreeHourlyForecastRep
+        else:
+            raise ValueError(f"'{res}' is not a valid Resolution.")
+
+    @classmethod
+    def from_dict(
+        cls, d: dict[str, str | list[dict[str, str]]], res: Resolution | str
+    ) -> typing.Self:
+        """Converts the dictionary returned by the DataPoint API to an instance of this class."""
+        rep_cls = cls.get_rep_class(res)
+
+        return cls(
+            type=d["type"],
+            forecast_date=date.fromisoformat(
+                d["value"].replace("Z", "")
+            ),  # date.fromisoformat doesn't like the 'Z' in the date string
+            reps=[rep_cls.from_dict(r) for r in d["Rep"]],
         )
 
 
 @dataclass(frozen=True)
 class Forecast:
     location: ForecastLocation
-    forecast_type: str
-    forecast_date: date
-    forecast_reps: list[ForecastRep]
+    periods: list[Period]
 
     @classmethod
     def from_dict(
-        cls, d: dict[str, str | list[dict[str, str] | list[dict[str, str]]]]
+        cls,
+        d: dict[str, str | list[dict[str, str] | list[dict[str, str]]]],
+        res: Resolution | str,
     ) -> typing.Self:
         """Converts the dictionary returned by the forecast API (under ['DV']['Location']) to an instance of this class."""
-        cls(
+
+        return cls(
             location=ForecastLocation.from_dict(d),
-            forecast_type=d["type"],
-            forecast_date=date.fromisoformat(d["Period"]["value"]),
-            forecast_reps=[ForecastRep.from_dict(r) for r in d["Period"]["Reps"]],
+            periods=[ForecastPeriod.from_dict(p, res) for p in d["Period"]],
         )
 
 
@@ -307,6 +364,6 @@ class METDataPoint:
         j = r.json()
 
         data_date = datetime.fromisoformat(j["SiteRep"]["DV"]["dataDate"])
-        forecast = Forecast.from_dict(j["SiteRep"]["DV"]["Location"])
+        forecast = Forecast.from_dict(j["SiteRep"]["DV"]["Location"], res)
 
         return data_date, forecast
