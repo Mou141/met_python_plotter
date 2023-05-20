@@ -17,7 +17,7 @@ def parse_args() -> tuple[str, int]:
     "Parses command line arguments."
 
     parser = argparse.ArgumentParser(
-        description="Retrieves the minimum night and maximum day temperatures for the daily forecasts for a location and plots them on a graph.."
+        description="Retrieves the minimum night and maximum day temperatures for the daily forecasts for a location and plots them on a graph."
     )
 
     parser.add_argument(
