@@ -1,7 +1,7 @@
 import typing, enum
 
 from dataclasses import dataclass
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 
 
 class Resolution(enum.StrEnum):
@@ -254,7 +254,9 @@ class ForecastPeriod:
             forecast_date=date.fromisoformat(
                 d["value"].replace("Z", "")
             ),  # date.fromisoformat doesn't like the 'Z' in the date string
-            reps=[rep_cls.from_dict(r) for r in d["Rep"]],
+            reps=[rep_cls.from_dict(r) for r in d["Rep"]]
+            if isinstance(d["Rep"], list)
+            else [rep_cls.from_dict(d["Rep"])],
         )
 
 
@@ -273,5 +275,7 @@ class Forecast:
 
         return cls(
             location=ForecastLocation.from_dict(d),
-            periods=[ForecastPeriod.from_dict(p, res) for p in d["Period"]],
+            periods=[ForecastPeriod.from_dict(p, res) for p in d["Period"]]
+            if isinstance(d["Period"], list)
+            else [ForecastPeriod.from_dict(d["Period"], res)],
         )

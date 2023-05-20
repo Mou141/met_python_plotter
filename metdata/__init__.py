@@ -11,6 +11,7 @@ from .metdataclasses import (
     ThreeHourlyForecastRep,
     ForecastPeriod,
     Forecast,
+    Resolution,
 )
 
 __all__ = [
@@ -25,4 +26,5 @@ __all__ = [
     "ThreeHourlyForecastRep",
     "ForecastPeriod",
     "Forecast",
+    "Resolution",
 ]
