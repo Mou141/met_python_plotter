@@ -47,7 +47,7 @@ def extract_temperatures(
 
         for r in p.reps:
             # Get the time on the forecast day that these forecasts are for
-            times.append(get_3hourly_forecast_time(p.forecast_date, r.period).time())
+            times.append(get_3hourly_forecast_time(p.forecast_date, r.period))
             temps.append(r.temperature)
 
         out[p.forecast_date] = (times, temps)

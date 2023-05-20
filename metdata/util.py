@@ -10,9 +10,14 @@ dsin = lambda d: sin(radians(d))
 dcos = lambda d: cos(radians(d))
 
 
-def get_3hourly_forecast_time(d: date, delta: timedelta) -> datetime:
-    """Takes a date of a 3hourly forecast and the time since midnight of the forecast and returns a datetime object representing the forecast time."""
+def get_3hourly_forecast_datetime(d: date, delta: timedelta) -> datetime:
+    """Takes the date of a 3hourly forecast and the time since midnight of the forecast and returns a datetime object representing the forecast time."""
     return datetime.combine(d, time(0, 0, tzinfo=timezone.utc)) + delta
+
+
+def get_3hourly_forecast_time(d: date, delta: timedelta) -> time:
+    """Takes thedate of a 3hourly forecast and the time since midnight of the forecast and returns a time object representing the forecast time."""
+    return get_3hourly_forecast_datetime(d, delta).time()
 
 
 def get_distance(lat1: float, long1: float, lat2: float, long2: float) -> float:
