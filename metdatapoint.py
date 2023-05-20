@@ -1,7 +1,7 @@
 """A simple object oriented interface for the MET Office's DataPoint API."""
 
 import requests, functools, enum, typing
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from dataclasses import dataclass
 
 
@@ -203,7 +203,7 @@ class DailyForecastRep(BaseForecastRep):
 
 @dataclass(frozen=True)
 class ThreeHourlyForecastRep(BaseForecastRep):
-    period: int
+    period: timedelta
 
     @classmethod
     def from_dict(cls, d: dict[str, str]) -> typing.Self:
@@ -221,7 +221,7 @@ class ThreeHourlyForecastRep(BaseForecastRep):
             else None,  # No UV index at night
             weather_type=SignificantWeather.from_returned_str(d["W"]),
             precipitation_probability=float(d["Pp"]),
-            period=int(d["$"]),
+            period=timedelta(seconds=float(d["$"])),
         )
 
 
