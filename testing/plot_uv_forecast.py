@@ -4,7 +4,6 @@ import sys, argparse, requests
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
 
 # Add the metdata package location to the python path
 LIB_PATH = Path(__file__).parent.parent.resolve()
