@@ -87,6 +87,9 @@ def plot_graph(temp_dict: dict[date, tuple[list[time], list[float]]], location: 
     # y-axis is shared so only need to label one
     axes[0].set(ylabel="Temperature ($^\circ C$)")
 
+    # Put tick labels on the right side of the last subplot too
+    axes[-1].tick_params(labelright=True)
+
     for d, a in zip(dates, axes):
         times, temps = temp_dict[d]
 
@@ -105,6 +108,9 @@ def plot_graph(temp_dict: dict[date, tuple[list[time], list[float]]], location: 
 
         # Set wider margins so that plot points don't overlap edge
         a.margins(x=0.2)
+
+        # Put ticks on the right side of each subplot as well
+        a.tick_params(right=True)
 
     plt.show()
 
