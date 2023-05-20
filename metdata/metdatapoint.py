@@ -66,6 +66,18 @@ class METDataPoint:
 
         return data_date, time_steps
 
+    def get_wxobs_capabilities(self) -> list[datetime]:
+        """Returns the timesteps for which observations are available (as datetime objects)."""
+        r = self._session.get(
+            f"{self.base_url}val/wxobs/all/json/capabilities",
+            params={"key": self.key, "res": "hourly"},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return [datetime.fromisoformat(d) for d in j["Resource"]["TimeSteps"]["TS"]]
+
     def get_forecasts(
         self,
         res: Resolution | str,
