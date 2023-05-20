@@ -207,7 +207,7 @@ class ThreeHourlyForecastRep(BaseForecastRep):
 
     @classmethod
     def from_dict(cls, d: dict[str, str]) -> typing.Self:
-        """Gets the appropriate class to represent the 'Rep' objects for this type of forecast."""
+        """Converts the dictionary returned by the DataPoint API to an instance of this class."""
         return cls(
             feels_like_temperature=float(d["F"]),
             wind_gust=float(d["G"]),
