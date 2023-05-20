@@ -65,7 +65,7 @@ def plot_graph(dates: list[date], uv_indices: list[int], location: str):
     # Set appropriate y limits for UV indices
     plt.ylim(0, 12)
 
-    # Make sure there's a majors tick for every index
+    # Make sure there's a major tick for every index
     plt.yticks(range(0, 13))
 
     plt.plot([d.isoformat() for d in dates], uv_indices, "ro")
