@@ -159,7 +159,7 @@ class WindDirection(enum.StrEnum):
 
 @dataclass(frozen=True)
 class BaseForecastRep:
-    visibility: Visibility
+    visibility: Visibility | int
     wind_direction: WindDirection
     wind_speed: float
     wind_gust: float
