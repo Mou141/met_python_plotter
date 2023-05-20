@@ -65,7 +65,7 @@ class ForecastLocation(SiteInfo):
 
 class Period(enum.StrEnum):
     DAY = "Day"
-    Night = "Night"
+    NIGHT = "Night"
 
 
 class Visibility(enum.StrEnum):
