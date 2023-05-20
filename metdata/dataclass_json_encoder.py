@@ -2,6 +2,8 @@
 import dataclasses, json, typing
 from datetime import datetime, date, time, timedelta
 
+__all__ = ["DataclassJSONEncoder"]
+
 
 class DataclassJSONEncoder(json.JSONEncoder):
     def default(self, obj: typing.Any) -> typing.Any:

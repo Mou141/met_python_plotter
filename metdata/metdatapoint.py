@@ -4,6 +4,8 @@ import requests, functools, typing
 from datetime import datetime, date
 from .metdataclasses import SiteInfo, Resolution, Forecast
 
+__all__ = ["METDataPoint"]
+
 
 class METDataPoint:
     """Downloads data from the MET DataPoint API.
