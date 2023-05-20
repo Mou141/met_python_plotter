@@ -70,7 +70,7 @@ class METDataPoint:
         self,
         res: Resolution | str,
         location_id: int | str,
-        time: typing.Optional[datetime | str] = None,
+        time: typing.Optional[datetime | date | str] = None,
     ) -> tuple[datetime, Forecast]:
         """Returns forecasts for a specific location (or all locations if "all" is passed) at either daily or three-hourly resolution (as specified by the res parameter).
         To get a specific forecast, specify the time parameter."""
@@ -78,7 +78,7 @@ class METDataPoint:
 
         if time is not None:
             # If a time parameter is specified then a specific forecast has been requested rather than all available forecasts
-            if isinstance(time, datetime):
+            if isinstance(time, datetime) or isinstance(time, date):
                 params["time"] = time.isoformat()
             else:
                 params["time"] = time
