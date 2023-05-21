@@ -496,6 +496,6 @@ class RegionalForecastLocation:
     def from_dict(cls, d: dict[str, str]) -> typing.Self:
         """Converts the data returned from the API to an instance of this class."""
         return cls(
-            location_id=int(d["id"]),
-            location_name=d["name"],
+            location_id=int(d["@id"]),
+            location_name=d["@name"],
         )

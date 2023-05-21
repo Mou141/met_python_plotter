@@ -9,6 +9,7 @@ from .metdataclasses import (
     Observation,
     UKExtremes,
     NationalParkLocation,
+    RegionalForecastLocation,
 )
 
 __all__ = ["METDataPoint"]
@@ -179,3 +180,17 @@ class METDataPoint:
         """Gets the national park forecasts for the given national park location (or 'all')."""
         # The API doesn't seem to be responding to requests to the appropriate URL
         raise NotImplementedError
+
+    def get_regional_forecast_site_list(self) -> list[RegionalForecastLocation]:
+        """Gets the list of locations for which regional forecasts are available."""
+        r = self._session.get(
+            f"{self.base_url}txt/wxfcs/regionalforecast/json/sitelist",
+            params={"key": self.key},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return [
+            RegionalForecastLocation.from_dict(r) for r in j["Locations"]["Location"]
+        ]
