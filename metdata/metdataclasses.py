@@ -1,7 +1,7 @@
 import typing, enum, functools
 
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 __all__ = [
     "Resolution",
@@ -19,6 +19,10 @@ __all__ = [
     "ObservationPeriod",
     "Observation",
     "PressureTendency",
+    "ExtremeType",
+    "ExtremeRegion",
+    "Extreme",
+    "UKExtremes",
 ]
 
 
@@ -377,4 +381,65 @@ class Observation:
             periods=[ObservationPeriod.from_dict(p) for p in d["Period"]]
             if isinstance(d["Period"], list)
             else [ObservationPeriod.from_dict(d["Period"])],
+        )
+
+
+class ExtremeType(enum.StrEnum):
+    HIGHEST_MAX_TEMP = "HMAXT"
+    LOWEST_MIN_TEMP = "LMINT"
+    LOWEST_MAX_TEMP = "LMAXT"
+    HIGHEST_MIN_TEMP = "HMINT"
+    HIGHEST_RAINFALL = "HRAIN"
+    HIGHEST_HOURS_SUN = "HSUN"
+
+
+@dataclass(frozen=True)
+class Extreme:
+    location_id: str
+    location_name: str
+    type: ExtremeType
+    unit: str
+    value: float
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            location_id=d["locId"],
+            location_name=d["locationName"],
+            type=ExtremeType(d["type"]),
+            unit=d["uom"],
+            value=float(d["$"]),
+        )
+
+
+@dataclass(frozen=True)
+class ExtremeRegion:
+    region_id: str
+    region_name: str
+    extremes: list[Extreme]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            region_id=d["id"],
+            region_name=d["name"],
+            extremes=[Extreme.from_dict(e) for e in d["Extremes"]["Extreme"]],
+        )
+
+
+@dataclass(frozen=True)
+class UKExtremes:
+    extreme_date: date
+    issued_at: datetime
+    regions: list[ExtremeRegion]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            extreme_date=date.fromisoformat(d["extremeDate"]),
+            issued_at=datetime.fromisoformat(d["issuedAt"]),
+            regions=[ExtremeRegion.from_dict(r) for r in d["Regions"]["Region"]],
         )
