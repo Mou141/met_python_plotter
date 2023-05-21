@@ -187,7 +187,7 @@ class BaseForecastRep:
     @classmethod
     def from_dict(cls, d: dict[str, str]) -> typing.Self:
         """Gets the appropriate class to represent the 'Rep' objects for this type of forecast."""
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @functools.cached_property
     def is_visibility(self) -> bool:

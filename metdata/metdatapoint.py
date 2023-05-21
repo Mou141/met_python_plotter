@@ -168,4 +168,4 @@ class METDataPoint:
     def get_national_park_locations(self) -> list[NationalParkLocation]:
         """Gets the list of national park locations."""
         # The API doesn't seem to be responding to requests to the appropriate URL
-        raise NotImplementedError()
+        raise NotImplementedError
