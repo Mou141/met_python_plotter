@@ -169,3 +169,13 @@ class METDataPoint:
         """Gets the list of national park locations."""
         # The API doesn't seem to be responding to requests to the appropriate URL
         raise NotImplementedError
+
+    def get_national_park_capabilities(self):
+        """Gets the list of forecasts available for each national park."""
+        # The API doesn't seem to be responding to requests to the appropriate URL
+        raise NotImplementedError
+
+    def get_national_park_forecasts(self, location_id: int | str):
+        """Gets the national park forecasts for the given national park location (or 'all')."""
+        # The API doesn't seem to be responding to requests to the appropriate URL
+        raise NotImplementedError
