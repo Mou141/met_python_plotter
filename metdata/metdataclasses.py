@@ -1,4 +1,4 @@
-import typing, enum
+import typing, enum, functools
 
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -80,16 +80,6 @@ class ForecastLocation(SiteInfo):
 class Period(enum.StrEnum):
     DAY = "Day"
     NIGHT = "Night"
-
-
-class Visibility(enum.StrEnum):
-    UNKNOWN = "UN"
-    VERY_POOR = "VP"
-    POOR = "PO"
-    MODERATE = "MO"
-    GOOD = "GO"
-    VERY_GOOD = "VG"
-    EXCELLENT = "EX"
 
 
 class SignificantWeather(enum.IntEnum):
@@ -188,6 +178,11 @@ class BaseForecastRep:
     def from_dict(cls, d: dict[str, str]) -> typing.Self:
         """Gets the appropriate class to represent the 'Rep' objects for this type of forecast."""
         raise NotImplementedError()
+
+    @functools.cached_property
+    def is_visibility(self) -> bool:
+        """Returns True if self.visibility is an instance of the Visibility class."""
+        return isinstance(self.visibility, Visibility)
 
 
 @dataclass(frozen=True)
