@@ -132,3 +132,17 @@ class METDataPoint:
             observation = Observation.from_dict(j["SiteRep"]["DV"]["Location"])
 
         return data_date, observation
+
+    def get_uk_extremes_capabilities(self) -> tuple[date, datetime]:
+        """Gets the date of the last UK extremes observation and the date and time the observation was issued."""
+        r = self._session.get(
+            f"{self.base_url}txt/wxobs/ukextremes/json/capabilities",
+            params={"key": self.key},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return date.fromisoformat(
+            j["UkExtremes"]["extremeDate"]
+        ), datetime.fromisoformat(j["UkExtremes"]["issuedAt"])
