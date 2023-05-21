@@ -10,6 +10,7 @@ from .metdataclasses import (
     UKExtremes,
     NationalParkLocation,
     RegionalForecastLocation,
+    RegionalForecast,
 )
 
 __all__ = ["METDataPoint"]
@@ -206,3 +207,15 @@ class METDataPoint:
         j = r.json()
 
         return datetime.fromisoformat(j["RegionalFcst"]["issuedAt"])
+
+    def get_regional_forecast(self, location_id: int) -> RegionalForecast:
+        """Gets the regional forecast at the specified location."""
+        r = self._session.get(
+            f"{self.base_url}txt/wxfcs/regionalforecast/json/{location_id}",
+            params={"key": self.key},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return RegionalForecast.from_dict(j["RegionalFcst"])

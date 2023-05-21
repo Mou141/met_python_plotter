@@ -26,6 +26,10 @@ __all__ = [
     "ExtremeUnit",
     "NationalParkLocation",
     "RegionalForecastLocation",
+    "RegionalForecastParagraph",
+    "RegionalForecastPeriodID",
+    "RegionalForecastPeriod",
+    "RegionalForecast",
 ]
 
 
@@ -498,4 +502,63 @@ class RegionalForecastLocation:
         return cls(
             location_id=int(d["@id"]),
             location_name=d["@name"],
+        )
+
+
+@dataclass(frozen=True)
+class RegionalForecastParagraph:
+    title: str
+    text: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            title=d["title"],
+            text=d["$"],
+        )
+
+
+class RegionalForecastPeriodID(enum.StrEnum):
+    ONE_TO_TWO = "day1to2"
+    THREE_TO_FIVE = "day3to5"
+    SIX_TO_FIFTEEN = "day6to15"
+    SIXTEEN_TO_THIRTY = "day16to30"
+
+
+@dataclass(frozen=True)
+class RegionalForecastPeriod:
+    id: RegionalForecastPeriodID
+    paragraphs: list[RegionalForecastParagraph]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            id=RegionalForecastPeriodID(d["id"]),
+            paragraphs=[RegionalForecastParagraph.from_dict(p) for p in d["Paragraph"]]
+            if isinstance(d["Paragraph"], list)
+            else [RegionalForecastParagraph.from_dict(d["Paragraph"])],
+        )
+
+
+@dataclass(frozen=True)
+class RegionalForecast:
+    created_on: datetime
+    issued_at: datetime
+    region_id: str
+    periods: list[RegionalForecastPeriod]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            created_on=datetime.fromisoformat(d["createdOn"]),
+            issued_at=datetime.fromisoformat(d["issuedAt"]),
+            region_id=d["regionId"],
+            periods=[
+                RegionalForecastPeriod.from_dict(p) for p in d["FcstPeriods"]["Period"]
+            ]
+            if isinstance(d["FcstPeriods"]["Period"], list)
+            else [RegionalForecastPeriod.from_dict(d["FcstPeriods"]["Period"])],
         )
