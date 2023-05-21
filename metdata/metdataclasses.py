@@ -23,6 +23,7 @@ __all__ = [
     "ExtremeRegion",
     "Extreme",
     "UKExtremes",
+    "ExtremeUnit",
 ]
 
 
@@ -393,12 +394,18 @@ class ExtremeType(enum.StrEnum):
     HIGHEST_HOURS_SUN = "HSUN"
 
 
+class ExtremeUnit(enum.StrEnum):
+    CELSIUS = "degC"
+    MILLIMETRE = "mm"
+    HOURS = "hours"
+
+
 @dataclass(frozen=True)
 class Extreme:
     location_id: str
     location_name: str
     type: ExtremeType
-    unit: str
+    unit: ExtremeUnit
     value: float
 
     @classmethod
@@ -408,7 +415,7 @@ class Extreme:
             location_id=d["locId"],
             location_name=d["locationName"],
             type=ExtremeType(d["type"]),
-            unit=d["uom"],
+            unit=ExtremeUnit(d["uom"]),
             value=float(d["$"]),
         )
 

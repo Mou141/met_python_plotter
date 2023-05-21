@@ -2,7 +2,7 @@
 
 import requests, functools, typing
 from datetime import datetime, date
-from .metdataclasses import SiteInfo, Resolution, Forecast, Observation
+from .metdataclasses import SiteInfo, Resolution, Forecast, Observation, UKExtremes
 
 __all__ = ["METDataPoint"]
 
@@ -146,3 +146,14 @@ class METDataPoint:
         return date.fromisoformat(
             j["UkExtremes"]["extremeDate"]
         ), datetime.fromisoformat(j["UkExtremes"]["issuedAt"])
+
+    def get_uk_extremes(self) -> UKExtremes:
+        """Gets the latest extremes of weather in the UK."""
+        r = self._session.get(
+            f"{self.base_url}txt/wxobs/ukextremes/json/latest", params={"key": self.key}
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return UKExtremes.from_dict(j["UkExtremes"])

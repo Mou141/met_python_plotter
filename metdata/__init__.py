@@ -20,6 +20,7 @@ from .metdataclasses import (
     ExtremeRegion,
     ExtremeType,
     Extreme,
+    ExtremeUnit,
 )
 
 __all__ = [
@@ -43,4 +44,5 @@ __all__ = [
     "ExtremeRegion",
     "ExtremeType",
     "Extreme",
+    "ExtremeUnit",
 ]
