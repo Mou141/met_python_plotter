@@ -24,6 +24,7 @@ __all__ = [
     "Extreme",
     "UKExtremes",
     "ExtremeUnit",
+    "NationalParkLocation",
 ]
 
 
@@ -468,4 +469,18 @@ class UKExtremes:
             extreme_date=date.fromisoformat(d["extremeDate"]),
             issued_at=datetime.fromisoformat(d["issuedAt"]),
             regions=[ExtremeRegion.from_dict(r) for r in d["Regions"]["Region"]],
+        )
+
+
+@dataclass(frozen=True)
+class NationalParkLocation:
+    location_id: int
+    location_name: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            location_id=int(d["id"]),
+            location_name=d["name"],
         )
