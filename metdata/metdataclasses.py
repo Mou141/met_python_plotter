@@ -16,6 +16,7 @@ __all__ = [
     "ForecastPeriod",
     "Forecast",
     "ObservationRep",
+    "ObservationPeriod",
 ]
 
 
