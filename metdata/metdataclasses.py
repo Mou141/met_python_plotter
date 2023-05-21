@@ -315,6 +315,24 @@ class ObservationRep:
     pressure_tendency: typing.Optional[float]
     period: timedelta
 
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            temperature=float(d["T"]) if "T" in d.keys() else None,
+            wind_direction=WindDirection(d["D"]) if "D" in d.keys() else None,
+            wind_speed=float(d["S"]) if "S" in d.keys() else None,
+            wind_gust=float(d["G"]) if "G" in d.keys() else None,
+            dew_point=float(d["Dp"]) if "Dp" in d.keys() else None,
+            relative_humidity=float(d["H"]) if "H" in d.keys() else None,
+            weather_type=SignificantWeather.from_returned_str(d["W"])
+            if "W" in d.keys()
+            else None,
+            pressure=float(d["P"]) if "P" in d.keys() else None,
+            pressure_tendency=float(d["Pt"]) if "Pt" in d.keys() else None,
+            period=timedelta(minutes=float(d["$"])),
+        )
+
 
 @dataclass(frozen=True)
 class ObservationPeriod:
