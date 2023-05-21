@@ -18,6 +18,7 @@ __all__ = [
     "ObservationRep",
     "ObservationPeriod",
     "Observation",
+    "PressureTendency",
 ]
 
 
@@ -303,6 +304,12 @@ class Forecast:
         )
 
 
+class PressureTendency(enum.StrEnum):
+    RISING = "R"
+    FALLING = "F"
+    STEADY = "S"
+
+
 @dataclass(frozen=True)
 class ObservationRep:
     temperature: typing.Optional[float]
@@ -314,7 +321,7 @@ class ObservationRep:
     weather_type: typing.Optional[SignificantWeather]
     visibility: typing.Optional[float]
     pressure: typing.Optional[float]
-    pressure_tendency: typing.Optional[float]
+    pressure_tendency: typing.Optional[PressureTendency]
     period: timedelta
 
     @classmethod
@@ -330,8 +337,9 @@ class ObservationRep:
             weather_type=SignificantWeather.from_returned_str(d["W"])
             if "W" in d.keys()
             else None,
+            visibility=float(d["V"]) if "V" in d.keys() else None,
             pressure=float(d["P"]) if "P" in d.keys() else None,
-            pressure_tendency=float(d["Pt"]) if "Pt" in d.keys() else None,
+            pressure_tendency=PressureTendency(d["Pt"]) if "Pt" in d.keys() else None,
             period=timedelta(minutes=float(d["$"])),
         )
 

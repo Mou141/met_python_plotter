@@ -2,7 +2,7 @@
 
 import requests, functools, typing
 from datetime import datetime, date
-from .metdataclasses import SiteInfo, Resolution, Forecast
+from .metdataclasses import SiteInfo, Resolution, Forecast, Observation
 
 __all__ = ["METDataPoint"]
 
@@ -108,3 +108,27 @@ class METDataPoint:
         forecast = Forecast.from_dict(j["SiteRep"]["DV"]["Location"], res)
 
         return data_date, forecast
+
+    def get_observations(
+        self, location_id: int | str
+    ) -> tuple[datetime, typing.Optional[Observation]]:
+        """Returns the observation data and the date and time of the last update for a specific location.
+        If no data is available for that location, then the date of last update and None are returned.
+        """
+        r = self._session.get(
+            f"{self.base_url}val/wxobs/all/json/{location_id}",
+            params={"key": self.key, "res": "hourly"},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        data_date = datetime.fromisoformat(j["SiteRep"]["DV"]["dataDate"])
+
+        if "Location" not in j["SiteRep"]["DV"].keys():
+            # There is no data for this location (although it is still a valid location)
+            observation = None
+        else:
+            observation = Observation.from_dict(j["SiteRep"]["DV"]["Location"])
+
+        return data_date, observation

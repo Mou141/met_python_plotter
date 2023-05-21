@@ -15,6 +15,7 @@ from .metdataclasses import (
     ObservationRep,
     ObservationPeriod,
     Observation,
+    PressureTendency,
 )
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "ObservationRep",
     "ObservationPeriod",
     "Observation",
+    "PressureTendency",
 ]
