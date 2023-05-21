@@ -194,3 +194,15 @@ class METDataPoint:
         return [
             RegionalForecastLocation.from_dict(r) for r in j["Locations"]["Location"]
         ]
+
+    def get_regional_forecast_capabilities(self) -> datetime:
+        """Gets the date and time at which the most recent regional forecasts were issued."""
+        r = self._session.get(
+            f"{self.base_url}txt/wxfcs/regionalforecast/json/capabilities",
+            params={"key": self.key},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return datetime.fromisoformat(j["RegionalFcst"]["issuedAt"])
