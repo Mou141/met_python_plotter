@@ -184,6 +184,16 @@ class BaseForecastRep:
         """Returns True if self.visibility is an instance of the Visibility class."""
         return isinstance(self.visibility, Visibility)
 
+    @functools.cached_property
+    def has_uv_index(self) -> bool:
+        """Returns True if self.max_uv_index is specified."""
+        return self.max_uv_index is not None
+
+    @functools.cached_property
+    def weather_type_unknown(self) -> bool:
+        """Returns true if the weather type is not known."""
+        return self.weather_type is None
+
 
 @dataclass(frozen=True)
 class DailyForecastRep(BaseForecastRep):
