@@ -92,7 +92,7 @@ class METDataPoint:
 
         if time is not None:
             # If a time parameter is specified then a specific forecast has been requested rather than all available forecasts
-            if isinstance(time, datetime) or isinstance(time, date):
+            if isinstance(time, (datetime, date)):
                 params["time"] = time.isoformat()
             else:
                 params["time"] = time

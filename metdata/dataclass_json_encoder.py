@@ -10,9 +10,7 @@ class DataclassJSONEncoder(json.JSONEncoder):
         if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
             return dataclasses.asdict(obj)
 
-        elif (
-            isinstance(obj, datetime) or isinstance(obj, date) or isinstance(obj, time)
-        ):
+        elif isinstance(obj, (datetime, date, time)):
             return obj.isoformat()
 
         elif isinstance(obj, timedelta):
