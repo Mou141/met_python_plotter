@@ -314,3 +314,10 @@ class ObservationRep:
     pressure: typing.Optional[float]
     pressure_tendency: typing.Optional[float]
     period: timedelta
+
+
+@dataclass(frozen=True)
+class ObservationPeriod:
+    type: str
+    observation_date: date
+    reps: list[ObservationRep]
