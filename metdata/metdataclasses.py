@@ -130,6 +130,93 @@ class SignificantWeather(enum.IntEnum):
     THUNDER_SHOWER_DAY = 29
     THUNDER = 30
 
+    # Set containing enum members that represent clear weather
+    _clear = enum.nonmember({CLEAR_NIGHT, SUNNY_DAY})
+
+    # Set containing enum members that represent thunder
+    _thunder = enum.nonmember(
+        {
+            THUNDER_SHOWER_NIGHT,
+            THUNDER_SHOWER_DAY,
+            THUNDER,
+        }
+    )
+    # Set containing enum members that represent snow
+    _snow = enum.nonmember(
+        {
+            LIGHT_SNOW_SHOWER_NIGHT,
+            LIGHT_SNOW_SHOWER_DAY,
+            LIGHT_SNOW,
+            HEAVY_SNOW_SHOWER_NIGHT,
+            HEAVY_SNOW_SHOWER_DAY,
+            HEAVY_SNOW,
+        }
+    )
+
+    # Set containing enum members that represent hail
+    _hail = enum.nonmember(
+        {
+            HAIL_SHOWER_NIGHT,
+            HAIL_SHOWER_DAY,
+            HAIL,
+        }
+    )
+
+    # Set containing enum members that represent rain
+    _rain = enum.nonmember(
+        {
+            LIGHT_RAIN_SHOWER_NIGHT,
+            LIGHT_RAIN_SHOWER_DAY,
+            DRIZZLE,
+            LIGHT_RAIN,
+            HEAVY_RAIN_SHOWER_NIGHT,
+            HEAVY_RAIN_SHOWER_DAY,
+            HEAVY_RAIN,
+            THUNDER_SHOWER_NIGHT,
+            THUNDER_SHOWER_DAY,
+        }
+    )
+
+    # Set containing members that represent sleet
+    _sleet = enum.nonmember(
+        {
+            SLEET_SHOWER_NIGHT,
+            SLEET_SHOWER_DAY,
+            SLEET,
+        }
+    )
+
+    # Set containing members that represent precipitation
+    _precipitation = enum.nonmember(_snow | _hail | _rain | _sleet)
+
+    def is_rain(self) -> bool:
+        """Returns True if this is a rain weather type."""
+        return self in self._rain
+
+    def is_sleet(self) -> bool:
+        """Returns True if this is a sleet weather type."""
+        return self in self._sleet
+
+    def is_hail(self) -> bool:
+        """Returns True if this is a hail weather type."""
+        return self in self._hail
+
+    def is_snow(self) -> bool:
+        """Returns True if this is a snow weather type."""
+        return self in self._snow
+
+    def is_thunder(self) -> bool:
+        """Returns True if this is a thunder weather type."""
+        return self in self._thunder
+
+    def is_precipitation(self) -> bool:
+        """Returns True if this is a precipitation weather type (rain, snow, etc.)"""
+        return self in self._precipitation
+
+    def is_clear(self) -> bool:
+        """Returns True if this is a clear weather type."""
+        return self in self._clear
+
     @classmethod
     def from_returned_str(cls, s: str) -> typing.Optional[typing.Self]:
         """The API returns an integer in string format (or 'NA' for if not available)."""
