@@ -247,7 +247,7 @@ class ThreeHourlyForecastRep(BaseForecastRep):
 class ForecastPeriod:
     type: str
     forecast_date: date
-    reps: list[DailyForecastRep | ThreeHourlyForecastRep]
+    reps: list[DailyForecastRep] | list[ThreeHourlyForecastRep]
 
     @staticmethod
     def get_rep_class(
