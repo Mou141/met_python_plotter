@@ -30,6 +30,7 @@ __all__ = [
     "RegionalForecastPeriodID",
     "RegionalForecastPeriod",
     "RegionalForecast",
+    "MountainAreaLocation",
 ]
 
 
@@ -561,4 +562,18 @@ class RegionalForecast:
             ]
             if isinstance(d["FcstPeriods"]["Period"], list)
             else [RegionalForecastPeriod.from_dict(d["FcstPeriods"]["Period"])],
+        )
+
+
+@dataclass(frozen=True)
+class MountainAreaLocation:
+    location_id: str
+    location_name: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            location_id=d["@id"],
+            location_name=d["@name"],
         )

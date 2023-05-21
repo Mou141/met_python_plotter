@@ -11,6 +11,7 @@ from .metdataclasses import (
     NationalParkLocation,
     RegionalForecastLocation,
     RegionalForecast,
+    MountainAreaLocation,
 )
 
 __all__ = ["METDataPoint"]
@@ -219,3 +220,15 @@ class METDataPoint:
         j = r.json()
 
         return RegionalForecast.from_dict(j["RegionalFcst"])
+
+    def get_mountain_area_site_list(self) -> list[MountainAreaLocation]:
+        """Gets the list of of mountain area forecast sites."""
+        r = self._session.get(
+            f"{self.base_url}txt/wxfcs/mountainarea/json/sitelist",
+            params={"key": self.key},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return [MountainAreaLocation.from_dict(l) for l in j["Locations"]["Location"]]
