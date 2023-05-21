@@ -401,21 +401,21 @@ class ExtremeType(enum.StrEnum):
     HIGHEST_RAINFALL = "HRAIN"
     HIGHEST_HOURS_SUN = "HSUN"
 
+    _lookup = enum.nonmember(
+        {
+            HIGHEST_HOURS_SUN: ExtremeUnit.HOURS,
+            LOWEST_MIN_TEMP: ExtremeUnit.CELSIUS,
+            LOWEST_MAX_TEMP: ExtremeUnit.CELSIUS,
+            HIGHEST_MIN_TEMP: ExtremeUnit.CELSIUS,
+            HIGHEST_MAX_TEMP: ExtremeUnit.CELSIUS,
+            HIGHEST_RAINFALL: ExtremeUnit.MILLIMETRE,
+        }
+    )
+
     def get_unit(self) -> ExtremeUnit:
         """Get the unit of measurement associated with this type of extreme."""
-        if self in (
-            self.HIGHEST_MAX_TEMP,
-            self.HIGHEST_MIN_TEMP,
-            self.LOWEST_MAX_TEMP,
-            self.LOWEST_MAX_TEMP,
-        ):
-            return ExtremeUnit.CELSIUS
-
-        elif self == self.HIGHEST_RAINFALL:
-            return ExtremeUnit.MILLIMETRE
-
-        elif self == self.HIGHEST_HOURS_SUN:
-            return ExtremeUnit.HOURS
+        if self in self._lookup.keys():
+            return self._lookup[self]
 
         else:
             raise ValueError(f"Type {repr(self)} does not have an associated unit.")
