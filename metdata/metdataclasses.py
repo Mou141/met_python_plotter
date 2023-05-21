@@ -420,7 +420,7 @@ class ExtremeRegion:
     extremes: list[Extreme]
 
     @classmethod
-    def from_dict(cls, d: dict) -> typing.self:
+    def from_dict(cls, d: dict) -> typing.Self:
         """Converts the data returned from the API to an instance of this class."""
         return cls(
             region_id=d["id"],
