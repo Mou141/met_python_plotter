@@ -2,7 +2,14 @@
 
 import requests, functools, typing
 from datetime import datetime, date
-from .metdataclasses import SiteInfo, Resolution, Forecast, Observation, UKExtremes
+from .metdataclasses import (
+    SiteInfo,
+    Resolution,
+    Forecast,
+    Observation,
+    UKExtremes,
+    NationalParkLocation,
+)
 
 __all__ = ["METDataPoint"]
 
@@ -157,3 +164,8 @@ class METDataPoint:
         j = r.json()
 
         return UKExtremes.from_dict(j["UkExtremes"])
+
+    def get_national_park_locations(self) -> list[NationalParkLocation]:
+        """Gets the list of national park locations."""
+        # The API doesn't seem to be responding to requests to the appropriate URL
+        raise NotImplementedError()
