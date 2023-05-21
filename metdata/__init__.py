@@ -22,6 +22,7 @@ from .metdataclasses import (
     Extreme,
     ExtremeUnit,
     NationalParkLocation,
+    RegionalForecastLocation,
 )
 
 __all__ = [
@@ -47,4 +48,5 @@ __all__ = [
     "Extreme",
     "ExtremeUnit",
     "NationalParkLocation",
+    "RegionalForecastLocation",
 ]
