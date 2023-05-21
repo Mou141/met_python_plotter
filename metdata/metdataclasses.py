@@ -385,6 +385,12 @@ class Observation:
         )
 
 
+class ExtremeUnit(enum.StrEnum):
+    CELSIUS = "degC"
+    MILLIMETRE = "mm"
+    HOURS = "hours"
+
+
 class ExtremeType(enum.StrEnum):
     HIGHEST_MAX_TEMP = "HMAXT"
     LOWEST_MIN_TEMP = "LMINT"
@@ -393,11 +399,24 @@ class ExtremeType(enum.StrEnum):
     HIGHEST_RAINFALL = "HRAIN"
     HIGHEST_HOURS_SUN = "HSUN"
 
+    def get_unit(self) -> ExtremeUnit:
+        """Get the unit of measurement associated with this type of extreme."""
+        if self in (
+            self.HIGHEST_MAX_TEMP,
+            self.HIGHEST_MIN_TEMP,
+            self.LOWEST_MAX_TEMP,
+            self.LOWEST_MAX_TEMP,
+        ):
+            return ExtremeUnit.CELSIUS
 
-class ExtremeUnit(enum.StrEnum):
-    CELSIUS = "degC"
-    MILLIMETRE = "mm"
-    HOURS = "hours"
+        elif self == self.HIGHEST_RAINFALL:
+            return ExtremeUnit.MILLIMETRE
+
+        elif self == self.HIGHEST_HOURS_SUN:
+            return ExtremeUnit.HOURS
+
+        else:
+            raise ValueError(f"Type {repr(self)} does not have an associated unit.")
 
 
 @dataclass(frozen=True)
