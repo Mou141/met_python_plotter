@@ -15,6 +15,7 @@ __all__ = [
     "ThreeHourlyForecastRep",
     "ForecastPeriod",
     "Forecast",
+    "ObservationRep",
 ]
 
 
@@ -298,3 +299,18 @@ class Forecast:
             if isinstance(d["Period"], list)
             else [ForecastPeriod.from_dict(d["Period"], res)],
         )
+
+
+@dataclass(frozen=True)
+class ObservationRep:
+    temperature: typing.Optional[float]
+    wind_direction: typing.Optional[WindDirection]
+    wind_speed: typing.Optional[float]
+    wind_gust: typing.Optional[float]
+    dew_point: typing.Optional[float]
+    relative_humidity: typing.Optional[float]
+    weather_type: typing.Optional[SignificantWeather]
+    visibility: typing.Optional[float]
+    pressure: typing.Optional[float]
+    pressure_tendency: typing.Optional[float]
+    period: timedelta

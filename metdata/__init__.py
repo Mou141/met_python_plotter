@@ -12,6 +12,7 @@ from .metdataclasses import (
     ForecastPeriod,
     Forecast,
     Resolution,
+    ObservationRep,
 )
 
 __all__ = [
@@ -27,4 +28,5 @@ __all__ = [
     "ForecastPeriod",
     "Forecast",
     "Resolution",
+    "ObservationRep",
 ]
