@@ -1,5 +1,5 @@
-"""Find the closest forecast site to a specified latitude and longitude."""
-import sys, argparse
+"""Find the closest forecast or observation site to a specified latitude and longitude."""
+import sys, argparse, requests
 
 from pathlib import Path
 
@@ -11,7 +11,7 @@ from metdata import METDataPoint
 from metdata.util import get_closest
 
 
-def parse_args() -> tuple[str, float, float]:
+def parse_args() -> tuple[str, float, float, str]:
     """Parses command line arguments."""
 
     parser = argparse.ArgumentParser(
@@ -24,17 +24,41 @@ def parse_args() -> tuple[str, float, float]:
     parser.add_argument("latitude", type=float, help="Latitude of location.")
     parser.add_argument("longitude", type=float, help="Longitude of location.")
 
+    parser.add_argument(
+        "--type",
+        "-t",
+        choices=["forecast", "observation"],
+        default="forecast",
+        help="Type of site to find.",
+    )
+
     args = parser.parse_args()
 
-    return args.api_key, args.latitude, args.longitude
+    return args.api_key, args.latitude, args.longitude, args.type
 
 
-def main(api_key: str, latitude: float, longitude: float):
+def main(api_key: str, latitude: float, longitude: float, site_type: str):
     m = METDataPoint(api_key)
 
     print("Getting list of sites...")
-    sites = m.get_wxfcs_site_list()
-    print("List retrieved.")
+
+    try:
+        if site_type == "forecast":
+            sites = m.get_wxfcs_site_list()
+
+        elif site_type == "observation":
+            sites = m.get_wxobs_site_list()
+
+        else:
+            print(f"Error: '{site_type}' is not a valid type of site.", file=sys.stderr)
+            sys.exit(1)
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error while attempting to retrieve data: '{e}'", file=sys.stderr)
+        sys.exit(1)
+
+    else:
+        print("List retrieved.")
 
     closest = get_closest(sites, latitude, longitude)
 
