@@ -17,6 +17,7 @@ __all__ = [
     "Forecast",
     "ObservationRep",
     "ObservationPeriod",
+    "Observation",
 ]
 
 
@@ -340,3 +341,32 @@ class ObservationPeriod:
     type: str
     observation_date: date
     reps: list[ObservationRep]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            type=d["type"],
+            observation_date=date.fromisoformat(
+                d["value"].replace("Z", "")
+            ),  # date.fromisoformat doesn't like the 'Z' in the string
+            reps=[ObservationRep.from_dict(r) for r in d["Rep"]]
+            if isinstance(d["Rep"], list)
+            else [ObservationRep.from_dict(d["Rep"])],
+        )
+
+
+@dataclass(frozen=True)
+class Observation:
+    location: ForecastLocation
+    periods: list[ObservationPeriod]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            location=ForecastLocation.from_dict(d),
+            periods=[ObservationPeriod.from_dict(p) for p in d["Period"]]
+            if isinstance(d["Period"], list)
+            else [ObservationPeriod.from_dict(d["Period"])],
+        )
