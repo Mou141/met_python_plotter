@@ -48,7 +48,9 @@ def from_json_file(
         j = json.load(f, **json_args)
 
     if not isinstance(j, dict):
-        raise ValueError(f"JSON file '{str(path)}' does not contain a dictionary.")
+        raise ValueError(
+            f"JSON file '{str(path)}' does not contain a dictionary (returned object was of type {str(type(j))})."
+        )
 
     if not "met_api_key" in j.keys():
         raise ValueError(f"JSON file '{str(path)}' does not contain an API key.")
