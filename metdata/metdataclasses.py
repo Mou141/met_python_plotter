@@ -1,3 +1,4 @@
+"""Data classes for storing data retrieved from the API."""
 import typing, enum, functools
 
 from dataclasses import dataclass
