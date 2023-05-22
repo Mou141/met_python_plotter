@@ -64,7 +64,7 @@ def main(location_id: int, api_key: str, forecast_type: Resolution):
     _, forecast = m.get_forecasts(forecast_type, location_id, time=most_recent)
     print("Forecast retrieved.")
 
-    json_forecast = json.dumps(forecast, cls=DataclassJSONEncoder, indent=4)
+    json_forecast = json.dumps(forecast[0], cls=DataclassJSONEncoder, indent=4)
 
     print(json_forecast)
 

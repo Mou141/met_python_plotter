@@ -128,6 +128,9 @@ def main(api_key: str, location_id: int):
         sys.exit(1)
 
     else:
+        # Forecast list should contain only one Forecast object, so extract it
+        forecast = forecast[0]
+
         print(
             f"Forecast for {forecast.location.name} ({forecast.location.country}) retrieved (last updated: {data_date.strftime('%c')})."
         )

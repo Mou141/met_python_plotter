@@ -85,6 +85,10 @@ def main(api_key: str, location_id: int):
         sys.exit(1)
 
     else:
+        # There should only be one forecast in the list
+        # So extract it
+        forecast = forecast[0]
+
         print(f"Forecast retrieved (last updated: {data_date.strftime('%c')}).")
 
     dates, uv_indices = extract_uv_indices(forecast)
