@@ -22,10 +22,14 @@ def from_txt_file(path: Path | str, encoding: typing.Optional[str] = None) -> st
 
 
 def to_txt_file(
-    path: Path | str, api_key: str, encoding: typing.Optional[str] = None
+    path: Path | str, api_key: str | METDataPoint, encoding: typing.Optional[str] = None
 ) -> None:
     """Writes an API key to the specified file as a single line.
+    api_key can be a string containing the key or a METDataPoint instance.
     An encoding can optionally be specified with the encoding parameter."""
+
+    if isinstance(api_key, METDataPoint):
+        api_key = api_key.key
 
     with open(path, "w", encoding=encoding) as f:
         print(api_key, file=f)
@@ -54,13 +58,17 @@ def from_json_file(
 
 def to_json_file(
     path: Path | str,
-    api_key: str,
+    api_key: str | METDataPoint,
     json_args: typing.Optional[dict[str, typing.Any]] = {},
 ) -> None:
     """Saves an API key to a json formatted text file (in utf-8 encoding).
     The API will be saved as a dictionary with a singly entry: {'met_api_key': api_key}.
+    api_key can be a string containing the key or a METDataPoint instance.
     Specify any keyword arguments for the json.dump function by specifying a dictionary as the json_args parameter.
     """
+
+    if isinstance(api_key, METDataPoint):
+        api_key = api_key.key
 
     with open(path, "w", encoding="utf-8") as f:
         json.dump({"met_api_key": api_key}, f, **json_args)
