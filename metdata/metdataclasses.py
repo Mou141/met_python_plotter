@@ -31,6 +31,7 @@ __all__ = [
     "RegionalForecastPeriod",
     "RegionalForecast",
     "MountainAreaLocation",
+    "MountainForecastCapabilities",
 ]
 
 
@@ -663,4 +664,28 @@ class MountainAreaLocation:
         return cls(
             location_id=d["@id"],
             location_name=d["@name"],
+        )
+
+
+@dataclass(frozen=True)
+class MountainForecastCapabilities:
+    data_date: datetime
+    valid_from: datetime
+    valid_to: datetime
+    created_date: datetime
+    uri: str
+    area: str
+    risk: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            data_date=datetime.fromisoformat(d["DataDate"]),
+            valid_from=datetime.fromisoformat(d["ValidFrom"]),
+            valid_to=datetime.fromisoformat(d["ValidTo"]),
+            created_date=datetime.fromisoformat(d["CreatedDate"]),
+            uri=d["URI"],
+            area=d["Area"],
+            risk=d["Risk"],
         )
