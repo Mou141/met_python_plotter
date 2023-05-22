@@ -71,7 +71,7 @@ _LOADERS = {".txt": from_txt_file, ".json": from_json_file}
 
 def from_file(
     path: Path | str,
-    loaders: typing.Optional[dict[str, typing.Callable[[str], str]]] = _LOADERS,
+    loaders: typing.Optional[dict[str, typing.Callable[[Path | str], str]]] = _LOADERS,
 ) -> str:
     """Loads an API key from a file using an appropriate function based on the extension of the file.
     Default loaders are provided for '.txt' and '.json'.
