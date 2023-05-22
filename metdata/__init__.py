@@ -32,6 +32,15 @@ from .metdataclasses import (
     HazardElement,
     HazardLikelihood,
     Hazard,
+    Evening,
+    SimpleDay,
+    FirstExtendedDay,
+    ExtendedDayPeriod,
+    Height,
+    ExtendedDayPeakTemperature,
+    ExtendedDayValleyTemperature,
+    SecondExtendedDay,
+    MountainAreaForecast,
 )
 
 __all__ = [
@@ -67,4 +76,13 @@ __all__ = [
     "HazardElement",
     "HazardLikelihood",
     "Hazard",
+    "Evening",
+    "SimpleDay",
+    "FirstExtendedDay",
+    "ExtendedDayPeriod",
+    "Height",
+    "ExtendedDayPeakTemperature",
+    "ExtendedDayValleyTemperature",
+    "SecondExtendedDay",
+    "MountainAreaForecast",
 ]

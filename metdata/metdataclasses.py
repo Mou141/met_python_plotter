@@ -1,7 +1,7 @@
 import typing, enum, functools
 
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 
 __all__ = [
     "Resolution",
@@ -35,6 +35,15 @@ __all__ = [
     "HazardElement",
     "HazardLikelihood",
     "Hazard",
+    "Evening",
+    "SimpleDay",
+    "FirstExtendedDay",
+    "ExtendedDayPeriod",
+    "Height",
+    "ExtendedDayPeakTemperature",
+    "ExtendedDayValleyTemperature",
+    "SecondExtendedDay",
+    "MountainAreaForecast",
 ]
 
 
@@ -729,4 +738,207 @@ class Hazard:
         return cls(
             element=HazardElement.from_dict(d["Element"]),
             likelihood=HazardLikelihood.from_dict(d["Likelihood"]),
+        )
+
+
+@dataclass(frozen=True)
+class BaseDay:
+    validity: datetime
+
+
+@dataclass(frozen=True)
+class BaseSimpleDay:
+    summary: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            validity=datetime.fromisoformat(d["Validity"]),
+            summary=d["Summary"],
+        )
+
+
+@dataclass(frozen=True)
+class Evening(BaseSimpleDay):
+    pass
+
+
+@dataclass(frozen=True)
+class SimpleDay(BaseSimpleDay):
+    pass
+
+
+@dataclass(frozen=True)
+class BaseExtendedDay(BaseDay):
+    weather: str
+    visibility: str
+
+
+@dataclass(frozen=True)
+class Height:
+    level: str
+    wind_direction: WindDirection
+    wind_speed: float
+    max_gust: float
+    temperature: float
+    feels_like: float
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            level=d["Level"],
+            wind_direction=WindDirection(d["WindDirection"]),
+            wind_speed=float(d["WindSpeed"]),
+            max_gust=float(d["MaxGust"]),
+            temperature=float(d["Temperature"]),
+            feels_like=float(d["FeelsLike"]),
+        )
+
+
+@dataclass(frozen=True)
+class ExtendedDayPeriod:
+    end: time
+    start: time
+    weather_type: typing.Optional[SignificantWeather]
+    weather_description: str
+    precipitation_probability: str
+    heights: list[Height]
+    freezing_level: str
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            end=time.fromisoformat(d["End"]),
+            start=time.fromisoformat(d["Start"]),
+            weather_type=SignificantWeather.from_returned_str(
+                d["SignificantWeather"]["Code"]
+            ),
+            weather_description=d["SignificantWeather"]["$"],
+            precipitation_probability=d["Precipitation"]["Probability"],
+            heights=[Height.from_dict(h) for h in d["Height"]]
+            if isinstance(d["Height"], list)
+            else [Height.from_dict(d["Height"])],
+            freezing_level=d["FreezingLevel"],
+        )
+
+
+@dataclass(frozen=True)
+class FirstExtendedDay(BaseExtendedDay):
+    headline: str
+    confidence: str
+    view: str
+    cloud_free_hilltop: str
+    hazards: list[Hazard]
+    periods: list[Period]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            validity=datetime.fromisoformat(d["Validity"]),
+            headline=d["Headline"],
+            confidence=d["Confidence"],
+            view=d["View"],
+            cloud_free_hilltop=d["CloudFreeHillTop"],
+            weather=d["Weather"],
+            visibility=d["Visibility"],
+            hazards=[Hazard.from_dict(h) for h in d["Hazards"]["Hazard"]]
+            if isinstance(d["Hazards"]["Hazard"])
+            else [Hazard.from_dict(d["Hazards"]["Hazard"])],
+            periods=[ExtendedDayPeriod.from_dict(p) for p in d["Periods"]["Period"]]
+            if isinstance(d["Periods"]["Period"])
+            else [ExtendedDayPeriod.from_dict(d["Periods"]["Period"])],
+        )
+
+
+@dataclass(frozen=True)
+class BaseExtendedDayTemperature:
+    description: str
+
+
+@dataclass(frozen=True)
+class ExtendedDayPeakTemperature(BaseExtendedDayTemperature):
+    level: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        cls(
+            level=d["Level"],
+            description=d["$"],
+        )
+
+
+@dataclass(frozen=True)
+class ExtendedDayValleyTemperature(BaseExtendedDayTemperature):
+    title: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            title=d["Title"],
+            description=d["$"],
+        )
+
+
+@dataclass(frozen=True)
+class SecondExtendedDay(BaseExtendedDay):
+    wind: str
+    hill_cloud: str
+    peak_temperature: ExtendedDayPeakTemperature
+    valley_temperature: ExtendedDayValleyTemperature
+    freezing: str
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            validity=datetime.fromisoformat(d["Validity"]),
+            weather=d["Weather"],
+            wind=d["Wind"],
+            hill_cloud=d["HillCloud"],
+            visibility=d["Visibility"],
+            peak_temperature=ExtendedDayPeakTemperature.from_dict(
+                d["Temperature"]["Peak"]
+            ),
+            valley_temperature=ExtendedDayValleyTemperature.from_dict(
+                d["Temperature"]["Valley"]
+            ),
+            freezing=d["Temperature"]["Freezing"],
+        )
+
+
+@dataclass(frozen=True)
+class MountainAreaForecast:
+    location: str
+    issue: time
+    issued: datetime
+    type: str
+    evening: Evening
+    first_day: typing.Optional[FirstExtendedDay]
+    second_day: typing.Optional[SecondExtendedDay]
+    other_days: list[SimpleDay]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data from the API to an instance of this class."""
+        return cls(
+            location=d["Location"],
+            issue=time.fromisoformat(d["Issue"]),
+            issued=datetime.fromisoformat(d["Issued"]),
+            type=d["Type"],
+            Evening=Evening.from_dict(d["Evening"]),
+            first_day=FirstExtendedDay.from_dict(d["Days"]["Day"][0])
+            if isinstance(d["Days"]["Day"], list) and len(d["Days"]["Day"]) >= 1
+            else None,
+            second_day=SecondExtendedDay.from_dict(d["Days"]["Day"][1])
+            if isinstance(d["Days"]["Day"], list) and len(d["Days"]["Day"]) >= 2
+            else None,
+            other_days=[SimpleDay.from_dict(day) for day in d["Days"]["Day"][2:]]
+            if isinstance(d["Days"]["Day"], list) and len(d["Days"]["Day"]) >= 3
+            else [],
         )
