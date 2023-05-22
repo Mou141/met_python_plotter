@@ -725,7 +725,7 @@ class Hazard:
 
     @classmethod
     def from_dict(cls, d: dict[str, dict[str, str]]) -> typing.Self:
-        """Concerts the data returned from the API to an instance of this class."""
+        """Converts the data returned from the API to an instance of this class."""
         return cls(
             element=HazardElement.from_dict(d["Element"]),
             likelihood=HazardLikelihood.from_dict(d["Likelihood"]),
