@@ -52,10 +52,19 @@ def from_json_file(
             f"JSON file '{str(path)}' does not contain a dictionary (returned object was of type {str(type(j))})."
         )
 
-    if not "met_api_key" in j.keys():
+    elif not "met_api_key" in j.keys():
         raise ValueError(f"JSON file '{str(path)}' does not contain an API key.")
 
-    return j["met_api_key"]
+    else:
+        key = j["met_api_key"]
+
+        if not isinstance(key, str):
+            raise (
+                f"JSON file '{str(path)}' did not contain a string for the 'met_api_key' entry (entry eas of type {str(type(key))})."
+            )
+
+        else:
+            return key
 
 
 def to_json_file(
