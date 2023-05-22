@@ -27,3 +27,15 @@ class ImageMETDataPoint(METDataPoint):
             SurfacePressureChartCapability.from_dict(s)
             for s in j["BWSurfacePressureChartList"]["BWSurfacePressureChart"]
         ]
+
+    def get_surface_pressure_chart(self, period: int) -> Image:
+        """Gets the specified surface pressure chart from the API (in GIF format)
+        and returns it as a PIL.Image instance."""
+
+        with self._session.get(
+            f"{self.base_url}image/wxfcs/surfacepressure/gif",
+            params={"key": self.key, "timestep": period},
+            stream=True,
+        ) as r:
+            r.raise_for_status()
+            return Image.open(r.raw, formats=["GIF"])
