@@ -13,6 +13,7 @@ from .metdataclasses import (
     RegionalForecast,
     MountainAreaLocation,
     MountainForecastCapabilities,
+    MountainAreaForecast,
 )
 
 __all__ = ["METDataPoint"]
@@ -256,3 +257,15 @@ class METDataPoint:
             MountainForecastCapabilities.from_dict(c)
             for c in j["MountainForecastList"]["MountainForecast"]
         ]
+
+    def get_mountain_area_forecast(self, location_id: str) -> MountainAreaForecast:
+        """Gets the forecast information at a specified mountain area location."""
+        r = self._session.get(
+            f"{self.base_url}txt/wxfcs/mountainarea/json/{location_id}",
+            params={"key": self.key},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return MountainAreaForecast.from_dict(j["Report"])

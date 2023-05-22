@@ -748,6 +748,7 @@ class BaseDay:
 
 @dataclass(frozen=True)
 class BaseSimpleDay:
+    validity: datetime
     summary: str
 
     @classmethod
@@ -811,7 +812,7 @@ class ExtendedDayPeriod:
     def from_dict(cls, d: dict) -> typing.Self:
         """Converts the data returned from the API to an instance of this class."""
         return cls(
-            end=time.fromisoformat(d["End"]),
+            end=time.fromisoformat(d["End"]) if d["End"] != "24:00" else time(0, 0),
             start=time.fromisoformat(d["Start"]),
             weather_type=SignificantWeather.from_returned_str(
                 d["SignificantWeather"]["Code"]
@@ -846,10 +847,10 @@ class FirstExtendedDay(BaseExtendedDay):
             weather=d["Weather"],
             visibility=d["Visibility"],
             hazards=[Hazard.from_dict(h) for h in d["Hazards"]["Hazard"]]
-            if isinstance(d["Hazards"]["Hazard"])
+            if isinstance(d["Hazards"]["Hazard"], list)
             else [Hazard.from_dict(d["Hazards"]["Hazard"])],
             periods=[ExtendedDayPeriod.from_dict(p) for p in d["Periods"]["Period"]]
-            if isinstance(d["Periods"]["Period"])
+            if isinstance(d["Periods"]["Period"], list)
             else [ExtendedDayPeriod.from_dict(d["Periods"]["Period"])],
         )
 
@@ -931,7 +932,7 @@ class MountainAreaForecast:
             issue=time.fromisoformat(d["Issue"]),
             issued=datetime.fromisoformat(d["Issued"]),
             type=d["Type"],
-            Evening=Evening.from_dict(d["Evening"]),
+            evening=Evening.from_dict(d["Evening"]),
             first_day=FirstExtendedDay.from_dict(d["Days"]["Day"][0])
             if isinstance(d["Days"]["Day"], list) and len(d["Days"]["Day"]) >= 1
             else None,
