@@ -2,7 +2,13 @@
 from pathlib import Path
 import json, typing
 
-__all__ = ["from_txt_file", "to_txt_file", "from_json_file", "to_json_file"]
+__all__ = [
+    "from_txt_file",
+    "to_txt_file",
+    "from_json_file",
+    "to_json_file",
+    "from_file",
+]
 
 
 def from_txt_file(path: Path | str, encoding: typing.Optional[str] = None) -> str:
@@ -57,3 +63,28 @@ def to_json_file(
 
     with open(path, "w", encoding="utf-8") as f:
         json.dump({"met_api_key": api_key}, f, **json_args)
+
+
+# Functions to load key from file
+_LOADERS = {".txt": from_txt_file, ".json": from_json_file}
+
+
+def from_file(
+    path: Path | str,
+    loaders: typing.Optional[dict[str, typing.Callable[[str], str]]] = _LOADERS,
+) -> str:
+    """Loads an API key from a file using an appropriate function based on the extension of the file.
+    Default loaders are provided for '.txt' and '.json'.
+    The loaders can be changed by passing a dictionary mapping file extensions to callables to the loaders parameter.
+    Each callable should take the file path as a parameter and return the API key.
+    """
+
+    ext = Path(path).suffix.lower()
+
+    if ext in loaders.keys():
+        return loaders[ext](path)
+
+    else:
+        raise ValueError(
+            f"No function specified which can load a key from file of extension '{ext}'."
+        )
