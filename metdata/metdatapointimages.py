@@ -1,5 +1,6 @@
 """Provides a subclass for getting images and associated data from the API."""
 from PIL import Image
+import typing
 
 from .metdatapoint import METDataPoint
 from .metdataimagedataclasses import SurfacePressureChartCapability
@@ -28,7 +29,7 @@ class ImageMETDataPoint(METDataPoint):
             for s in j["BWSurfacePressureChartList"]["BWSurfacePressureChart"]
         ]
 
-    def get_surface_pressure_chart(self, period: int) -> Image:
+    def get_surface_pressure_chart(self, period: int) -> Image.Image:
         """Gets the specified surface pressure chart from the API (in GIF format)
         and returns it as a PIL.Image instance."""
 
@@ -39,3 +40,13 @@ class ImageMETDataPoint(METDataPoint):
         ) as r:
             r.raise_for_status()
             return Image.open(r.raw, formats=["GIF"])
+
+    def get_all_surface_pressure_charts(
+        self,
+    ) -> typing.Generator[tuple[int, Image.Image], None, None]:
+        """Yields the period and loaded image data of every available surface pressure chart."""
+
+        periods = (c.period for c in self.get_surface_pressure_chart_capabilities())
+
+        for p in periods:
+            yield p, self.get_surface_pressure_chart(p)
