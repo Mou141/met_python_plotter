@@ -693,8 +693,9 @@ class MountainForecastCapabilities:
             risk=d["Risk"],
         )
 
+
 @dataclass(frozen=True)
-class HazardElement:
+class BaseHazardData:
     type: str
     value: str
 
@@ -706,18 +707,16 @@ class HazardElement:
             value=d["$"],
         )
 
-@dataclass(frozen=True)
-class HazardLikelihood:
-    type: str
-    value: str
 
-    @classmethod
-    def from_dict(cls, d: dict[str, str]) -> typing.Self:
-        """Converts the data returned from the API to an instance of this class."""
-        return cls(
-            type=d["Type"],
-            value=d["$"],
-        )
+@dataclass(frozen=True)
+class HazardElement(BaseHazardData):
+    pass
+
+
+@dataclass(frozen=True)
+class HazardLikelihood(BaseHazardData):
+    pass
+
 
 @dataclass(frozen=True)
 class Hazard:
