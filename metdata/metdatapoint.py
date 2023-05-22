@@ -95,9 +95,10 @@ class METDataPoint:
         res: Resolution | str,
         location_id: int | str,
         time: typing.Optional[datetime | date | str] = None,
-    ) -> tuple[datetime, Forecast]:
+    ) -> tuple[datetime, list[Forecast]]:
         """Returns forecasts for a specific location (or all locations if "all" is passed) at either daily or three-hourly resolution (as specified by the res parameter).
-        To get a specific forecast, specify the time parameter."""
+        To get a specific forecast (or all forecasts at a specific time instance), specify the time parameter.
+        """
         params = {"key": self.key, "res": res}
 
         if time is not None:
@@ -115,7 +116,14 @@ class METDataPoint:
         j = r.json()
 
         data_date = datetime.fromisoformat(j["SiteRep"]["DV"]["dataDate"])
-        forecast = Forecast.from_dict(j["SiteRep"]["DV"]["Location"], res)
+
+        if isinstance(j["SiteRep"]["DV"]["Location"], list):
+            forecast = [
+                Forecast.from_dict(f, res) for f in j["SiteRep"]["DV"]["Location"]
+            ]
+
+        else:
+            forecast = [Forecast.from_dict(j["SiteRep"]["DV"]["Location"], res)]
 
         return data_date, forecast
 
