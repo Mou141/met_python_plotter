@@ -13,7 +13,7 @@ def from_txt_file(path: Path | str) -> str:
         return f.read(200).strip()
 
 
-def to_txt_file(path: Path | str, api_key: str):
+def to_txt_file(path: Path | str, api_key: str) -> None:
     """Writes an API key to the specified file as a single line."""
 
     with open(path, "w") as f:
@@ -38,7 +38,7 @@ def from_json_file(path: Path | str) -> str:
     return j["met_api_key"]
 
 
-def to_json_file(path: Path | str, api_key: str):
+def to_json_file(path: Path | str, api_key: str) -> None:
     """Saves an API key to a json formatted text file.
     The API will be saved as a dictionary with a singly entry: {'met_api_key': api_key}.
     """
