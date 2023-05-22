@@ -29,6 +29,9 @@ from .metdataclasses import (
     RegionalForecast,
     MountainAreaLocation,
     MountainForecastCapabilities,
+    HazardElement,
+    HazardLikelihood,
+    Hazard,
 )
 
 __all__ = [
@@ -61,4 +64,7 @@ __all__ = [
     "RegionalForecast",
     "MountainAreaLocation",
     "MountainForecastCapabilities",
+    "HazardElement",
+    "HazardLikelihood",
+    "Hazard",
 ]

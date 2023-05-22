@@ -32,6 +32,9 @@ __all__ = [
     "RegionalForecast",
     "MountainAreaLocation",
     "MountainForecastCapabilities",
+    "HazardElement",
+    "HazardLikelihood",
+    "Hazard",
 ]
 
 
@@ -688,4 +691,43 @@ class MountainForecastCapabilities:
             uri=d["URI"],
             area=d["Area"],
             risk=d["Risk"],
+        )
+
+@dataclass(frozen=True)
+class HazardElement:
+    type: str
+    value: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            type=d["Type"],
+            value=d["$"],
+        )
+
+@dataclass(frozen=True)
+class HazardLikelihood:
+    type: str
+    value: str
+
+    @classmethod
+    def from_dict(cls, d: dict[str, str]) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            type=d["Type"],
+            value=d["$"],
+        )
+
+@dataclass(frozen=True)
+class Hazard:
+    element: HazardElement
+    likelihood: HazardLikelihood
+
+    @classmethod
+    def from_dict(cls, d: dict[str, dict[str, str]]) -> typing.Self:
+        """Concerts the data returned from the API to an instance of this class."""
+        return cls(
+            element=HazardElement.from_dict(d["Element"]),
+            likelihood=HazardLikelihood.from_dict(d["Likelihood"]),
         )
