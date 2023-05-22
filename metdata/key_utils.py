@@ -1,4 +1,5 @@
 """Utility functions for loading an API key from file and saving it to file."""
+from .metdatapoint import METDataPoint
 from pathlib import Path
 import json, typing
 
@@ -72,17 +73,21 @@ _LOADERS = {".txt": from_txt_file, ".json": from_json_file}
 def from_file(
     path: Path | str,
     loaders: typing.Optional[dict[str, typing.Callable[[Path | str], str]]] = _LOADERS,
-) -> str:
-    """Loads an API key from a file using an appropriate function based on the extension of the file.
+    cls: typing.Type[METDataPoint] = METDataPoint,
+) -> METDataPoint:
+    """Loads an API key from a file using an appropriate function based on the extension of the file,
+    and then uses it to instantiate an object for accessing the MET DataPoint API.
     Default loaders are provided for '.txt' and '.json'.
     The loaders can be changed by passing a dictionary mapping file extensions to callables to the loaders parameter.
     Each callable should take the file path as a parameter and return the API key.
+    By default an instance of METDataPoint is returned but a different class (which accepts a key= keyword parameter)
+    can be substituted by passing a class as this function's cls parameter.
     """
 
     ext = Path(path).suffix.lower()
 
     if ext in loaders.keys():
-        return loaders[ext](path)
+        return cls(key=loaders[ext](path))
 
     else:
         raise ValueError(
