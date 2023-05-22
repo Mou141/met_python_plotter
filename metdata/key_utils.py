@@ -99,5 +99,5 @@ def from_file(
 
     else:
         raise ValueError(
-            f"No function specified which can load a key from file of extension '{ext}'."
+            f"No loader available which can load a key from a file of extension '{ext}'."
         )
