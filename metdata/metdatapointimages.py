@@ -1,5 +1,6 @@
 """Provides a subclass for getting images and associated data from the API."""
 from PIL import Image
+from datetime import datetime
 import typing
 
 from .metdatapoint import METDataPoint
@@ -74,10 +75,50 @@ class ImageMETDataPoint(METDataPoint):
 
     def get_forecast_layer_capabilities_as_dict(
         self,
-    ) -> dict[str, list[int]]:
+    ) -> dict[str, tuple[datetime, list[int]]]:
         """Gets the types of forecast laters availableand the timesteps for which each can be downloaded.
-        However, this method returns a dictionary which maps the layer name to the list of available time steps.
+        However, this method returns a dictionary which maps the layer name to
+        the default time that timesteps are measured from and the list of available time steps.
         """
         forecast_layers = self.get_forecast_layer_capabilities()
 
-        return {l.layer_name: l.timesteps for l in forecast_layers.layers}
+        return {
+            l.layer_name: (l.default_time, l.timesteps) for l in forecast_layers.layers
+        }
+
+    def get_forecast_layer_at_time(
+        self, layer_name: str, default_time: datetime | str, timestep: int
+    ) -> Image.Image:
+        """Gets an image of the specified forecast layer at the specified timestep."""
+
+        if isinstance(default_time, datetime):
+            default_time = default_time.isoformat()
+
+        with self._session.get(
+            f"{self.base_url}layer/wxfcs/{layer_name}/png",
+            params={
+                "key": self.key,
+                "RUN": (default_time + "Z"),
+                "FORECAST": timestep,
+            },
+            stream=True,
+        ) as r:
+            r.raise_for_status()
+            return Image.open(r.raw, formats=["PNG"])
+
+    def get_all_forecast_layers_of_type(
+        self, layer_name: str
+    ) -> typing.Generator[tuple[int, Image.Image], None, None]:
+        """Gets all the specified layer at all available timesteps and yields them to the user.
+        If layer_name is not a valid layer name then ValueError is raised."""
+        layer_dict = self.get_forecast_layer_capabilities_as_dict()
+
+        if layer_name not in layer_dict.keys():
+            raise ValueError(
+                f"'{layer_name}' is not a valid layer name (valid options: '{' ,'.join(layer_dict.keys())}')."
+            )
+
+        default_time, timesteps = layer_dict[layer_name]
+
+        for t in timesteps:
+            yield t, self.get_forecast_layer_at_time(layer_name, default_time, t)
