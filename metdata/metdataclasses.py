@@ -748,8 +748,7 @@ class BaseDay:
 
 
 @dataclass(frozen=True)
-class BaseSimpleDay:
-    validity: datetime
+class BaseSimpleDay(BaseDay):
     summary: str
 
     @classmethod
