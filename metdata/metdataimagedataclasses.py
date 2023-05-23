@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime, time
 import typing
 
-__all__ = ["SurfacePressureChartCapability"]
+__all__ = ["SurfacePressureChartCapability", "ForecastLayer", "ForecastLayerData"]
 
 
 @dataclass(frozen=True)
@@ -27,4 +27,54 @@ class SurfacePressureChartCapability:
             if d["DataDateTime"] != 2400
             else time(0, 0),
             period=int(d["ForecastPeriod"]),
+        )
+
+
+@dataclass(frozen=True)
+class BaseLayer:
+    display_name: str
+    name: str
+    layer_name: str
+
+
+@dataclass(frozen=True)
+class ForecastLayer(BaseLayer):
+    default_time: datetime
+    timesteps: list[int]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            display_name=d["@displayName"],
+            name=d["Service"]["@name"],
+            layer_name=d["Service"]["LayerName"],
+            default_time=datetime.fromisoformat(
+                d["Service"]["Timesteps"]["@defaultTime"]
+            ),
+            timesteps=[int(t) for t in d["Service"]["Timesteps"]["Timestep"]],
+        )
+
+
+@dataclass(frozen=True)
+class BaseLayerData:
+    type: str
+    time_format: str
+    base_url: str
+
+
+@dataclass(frozen=True)
+class ForecastLayerData(BaseLayerData):
+    layers: list[ForecastLayer]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> typing.Self:
+        """Converts the data returned from the API to an instance of this class."""
+        return cls(
+            type=d["@type"],
+            time_format=d["BaseUrl"]["@forServiceTimeFormat"],
+            base_url=d["BaseUrl"]["$"],
+            layers=[ForecastLayer.from_dict(l) for l in d["Layer"]]
+            if isinstance(d["Layer"], list)
+            else [ForecastLayer.from_dict(d["Layer"])],
         )

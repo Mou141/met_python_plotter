@@ -3,9 +3,18 @@ from PIL import Image
 import typing
 
 from .metdatapoint import METDataPoint
-from .metdataimagedataclasses import SurfacePressureChartCapability
+from .metdataimagedataclasses import (
+    SurfacePressureChartCapability,
+    ForecastLayer,
+    ForecastLayerData,
+)
 
-__all__ = ["ImageMETDataPoint", "SurfacePressureChartCapability"]
+__all__ = [
+    "ImageMETDataPoint",
+    "SurfacePressureChartCapability",
+    "ForecastLayer",
+    "ForecastLayerData",
+]
 
 
 class ImageMETDataPoint(METDataPoint):
@@ -50,3 +59,16 @@ class ImageMETDataPoint(METDataPoint):
 
         for p in periods:
             yield p, self.get_surface_pressure_chart(p)
+
+    def get_forecast_layer_capabilities(self) -> ForecastLayerData:
+        """Gets the types of forecast layers available
+        and the timesteps for which each can be downloaded."""
+        r = self._session.get(
+            f"{self.base_url}layer/wxfcs/all/json/capabilities",
+            params={"key": self.key},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return ForecastLayerData.from_dict(j["Layers"])
