@@ -8,6 +8,8 @@ from .metdataimagedataclasses import (
     SurfacePressureChartCapability,
     ForecastLayer,
     ForecastLayerData,
+    ObservationLayer,
+    ObservationLayerData,
 )
 
 __all__ = [
@@ -15,6 +17,8 @@ __all__ = [
     "SurfacePressureChartCapability",
     "ForecastLayer",
     "ForecastLayerData",
+    "ObservationLayer",
+    "ObservationLayerData",
 ]
 
 
@@ -76,7 +80,7 @@ class ImageMETDataPoint(METDataPoint):
     def get_forecast_layer_capabilities_as_dict(
         self,
     ) -> dict[str, tuple[datetime, list[int]]]:
-        """Gets the types of forecast laters availableand the timesteps for which each can be downloaded.
+        """Gets the types of forecast laters available and the timesteps for which each can be downloaded.
         However, this method returns a dictionary which maps the layer name to
         the default time that timesteps are measured from and the list of available time steps.
         """
@@ -109,7 +113,7 @@ class ImageMETDataPoint(METDataPoint):
     def get_all_forecast_layers_of_type(
         self, layer_name: str
     ) -> typing.Generator[tuple[int, Image.Image], None, None]:
-        """Gets all the specified layer at all available timesteps and yields them to the user.
+        """Gets the specified layer images at all available timesteps and yields them to the user.
         If layer_name is not a valid layer name then ValueError is raised."""
         layer_dict = self.get_forecast_layer_capabilities_as_dict()
 
@@ -122,3 +126,54 @@ class ImageMETDataPoint(METDataPoint):
 
         for t in timesteps:
             yield t, self.get_forecast_layer_at_time(layer_name, default_time, t)
+
+    def get_observation_layer_capabilities(self) -> ObservationLayerData:
+        """Gets the types of observation layer available and the timesteps for which they can be downloaded."""
+        r = self._session.get(
+            f"{self.base_url}layer/wxobs/all/json/capabilities",
+            params={"key": self.key},
+        )
+
+        r.raise_for_status()
+        j = r.json()
+
+        return ObservationLayerData.from_dict(j["Layers"])
+
+    def get_observation_layer_capabilities_as_dict(self) -> dict[str, list[datetime]]:
+        """Gets the types of observation layer available and the timesteps for which they can be downloaded.
+        However, this method returns a dictionary that maps the layer names to a list of available timesteps.
+        """
+        observation_layers = self.get_observation_layer_capabilities()
+
+        return {o.layer_name: o.times for o in observation_layers.layers}
+
+    def get_observation_layer_at_time(
+        self, layer_name: str, timestep: datetime | str
+    ) -> Image.Image:
+        """Gets an image of the specified observation layer at the specified timestep."""
+
+        if isinstance(timestep, datetime):
+            timestep = timestep.isoformat()
+
+        with self._session.get(
+            f"{self.base_url}layer/wxobs/{layer_name}/png",
+            params={"key": self.key, "TIME": (timestep + "Z")},
+            stream=True,
+        ) as r:
+            r.raise_for_status()
+            return Image.open(r.raw, formats=["PNG"])
+
+    def get_all_observation_layers_of_type(
+        self, layer_name: str
+    ) -> typing.Generator[tuple[datetime, Image.Image], None, None]:
+        """Gets the specified layer images at all available timesteps and yields them to the user.
+        If layer_name is not a valid layer name, ValueError is raised."""
+        layer_dict = self.get_observation_layer_capabilities_as_dict()
+
+        if not layer_name in layer_dict.keys():
+            raise ValueError(
+                f"'{layer_name}' is not a valid layer name (valid options: '{' ,'.join(layer_dict.keys())}')."
+            )
+
+        for t in layer_dict[layer_name]:
+            yield t, self.get_observation_layer_at_time(layer_name, t)
