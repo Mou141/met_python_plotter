@@ -61,8 +61,7 @@ class ImageMETDataPoint(METDataPoint):
             yield p, self.get_surface_pressure_chart(p)
 
     def get_forecast_layer_capabilities(self) -> ForecastLayerData:
-        """Gets the types of forecast layers available
-        and the timesteps for which each can be downloaded."""
+        """Gets the types of forecast layers available and the timesteps for which each can be downloaded."""
         r = self._session.get(
             f"{self.base_url}layer/wxfcs/all/json/capabilities",
             params={"key": self.key},
@@ -72,3 +71,13 @@ class ImageMETDataPoint(METDataPoint):
         j = r.json()
 
         return ForecastLayerData.from_dict(j["Layers"])
+
+    def get_forecast_layer_capabilities_as_dict(
+        self,
+    ) -> dict[str, list[int]]:
+        """Gets the types of forecast laters availableand the timesteps for which each can be downloaded.
+        However, this method returns a dictionary which maps the layer name to the list of available time steps.
+        """
+        forecast_layers = self.get_forecast_layer_capabilities()
+
+        return {l.layer_name: l.timesteps for l in forecast_layers.layers}
