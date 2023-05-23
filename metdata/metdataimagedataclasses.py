@@ -1,6 +1,6 @@
 """Data classes for handling data related to images from the API."""
 from dataclasses import dataclass
-from datetime import datetime, time
+from datetime import datetime
 import typing
 
 __all__ = ["SurfacePressureChartCapability", "ForecastLayer", "ForecastLayerData"]
@@ -12,7 +12,7 @@ class SurfacePressureChartCapability:
     valid_from: datetime
     valid_to: datetime
     uri: str
-    data_date_time: time
+    data_date_time: int
     period: int
 
     @classmethod
@@ -23,9 +23,7 @@ class SurfacePressureChartCapability:
             valid_from=datetime.fromisoformat(d["ValidFrom"]),
             valid_to=datetime.fromisoformat(d["ValidTo"]),
             uri=d["ProductURI"],
-            data_date_time=time.fromisoformat(str(d["DataDateTime"]))
-            if d["DataDateTime"] != 2400
-            else time(0, 0),
+            data_date_time=int(d["DataDateTime"]),
             period=int(d["ForecastPeriod"]),
         )
 
