@@ -1,6 +1,8 @@
 """Provides a subclass for getting images and associated data from the API."""
 from PIL import Image
 from datetime import datetime
+from pathlib import Path
+from collections.abc import Iterable
 import typing
 
 from .metdatapoint import METDataPoint
@@ -177,3 +179,31 @@ class ImageMETDataPoint(METDataPoint):
 
         for t in layer_dict[layer_name]:
             yield t, self.get_observation_layer_at_time(layer_name, t)
+
+
+def save_animated_gif(
+    out: Path | str | typing.BinaryIO,
+    images: Iterable[Image.Image],
+    duration: int = 5000,
+    loop: int = 0,
+):
+    """Takes a list of images and saves them as an animated GIF to the specified file or file-like object (out).
+    The duration in milliseconds each image should be displayed can be optionally specified (default: duration = 5000).
+    As can the number of times the images should be looped (loop = 0, the default means forever).
+    """
+
+    if len(images) < 2:
+        raise ValueError(f"images must contain at least 2 images (not f{len(images)}).")
+
+    # Images can't be black and white mode L
+    images = [i.convert(mode="RGB") if i.mode == "L" else i for i in images]
+
+    images[0].save(
+        out,
+        format="GIF",
+        save_all=True,
+        append_images=images[1:],
+        optimize=False,
+        duration=duration,
+        loop=loop,
+    )
