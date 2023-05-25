@@ -57,7 +57,7 @@ def main(
 
     try:
         print(f"Retrieving images of {layer_type} layer '{layer_name}'...")
-        images = [i[1] for i in fetch_func(layer_name)]
+        images = [i[1] for i in sorted(fetch_func(layer_name), key=lambda x: x[0])]
 
     except (ValueError, OSError, requests.RequestException) as e:
         print(

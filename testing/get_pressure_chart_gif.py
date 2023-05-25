@@ -28,7 +28,10 @@ def main(api_key: str, out_file: Path | str | typing.BinaryIO):
 
     try:
         print("Retrieving pressure charts...")
-        images = [i[1] for i in m.get_all_surface_pressure_charts()]
+        images = [
+            i[1]
+            for i in sorted(m.get_all_surface_pressure_charts(), key=lambda x: x[0])
+        ]
 
     except (requests.RequestException, ValueError) as e:
         print(f"Error while retrieving pressure charts: '{e}'", file=sys.stderr)
