@@ -43,6 +43,8 @@ from .metdataclasses import (
     MountainAreaForecast,
 )
 
+from .key_utils import from_file
+
 __all__ = [
     "METDataPoint",
     "SiteInfo",
@@ -85,4 +87,5 @@ __all__ = [
     "ExtendedDayValleyTemperature",
     "SecondExtendedDay",
     "MountainAreaForecast",
+    "from_file",
 ]
