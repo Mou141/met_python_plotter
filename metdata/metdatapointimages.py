@@ -21,6 +21,7 @@ __all__ = [
     "ForecastLayerData",
     "ObservationLayer",
     "ObservationLayerData",
+    "save_animated_gif",
 ]
 
 
