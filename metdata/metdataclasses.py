@@ -1,8 +1,9 @@
 """Data classes for storing data retrieved from the API."""
-import typing, enum, functools
-
+import enum
+import functools
+import typing
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, time
+from datetime import date, datetime, time, timedelta
 
 __all__ = [
     "Resolution",

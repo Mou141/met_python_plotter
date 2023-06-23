@@ -1,6 +1,6 @@
 """Gets the specified forecast layer at all available timesteps."""
-import sys, argparse
-
+import argparse
+import sys
 from pathlib import Path
 
 # Add metdata package to the python path

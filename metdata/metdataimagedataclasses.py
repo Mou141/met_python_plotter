@@ -1,7 +1,7 @@
 """Data classes for handling data related to images from the API."""
+import typing
 from dataclasses import dataclass
 from datetime import datetime
-import typing
 
 __all__ = [
     "SurfacePressureChartCapability",

@@ -1,17 +1,19 @@
 """Gets the 3hourly forecast for a location and plots the temperature in a graph."""
 
-import sys, argparse, requests
-from pathlib import Path
+import argparse
+import sys
 from datetime import date, time
+from pathlib import Path
 
-import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.pyplot as plt
+import requests
 
 # Add the metdata package location to the python path
 LIB_PATH = Path(__file__).parent.parent.resolve()
 sys.path.append(str(LIB_PATH))
 
-from metdata import METDataPoint, Resolution, Forecast
+from metdata import Forecast, METDataPoint, Resolution
 from metdata.util import get_3hourly_forecast_time
 
 

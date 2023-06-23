@@ -1,6 +1,8 @@
 """Provides a simple json.JSONEncoder class that transparently handles dataclasses, datetime objects, time objects, timedelta objects, and date objects."""
-import dataclasses, json, typing
-from datetime import datetime, date, time, timedelta
+import dataclasses
+import json
+import typing
+from datetime import date, datetime, time, timedelta
 
 __all__ = ["DataclassJSONEncoder"]
 

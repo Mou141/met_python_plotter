@@ -1,7 +1,9 @@
 """Find the closest forecast or observation site to a specified latitude and longitude."""
-import sys, argparse, requests
-
+import argparse
+import sys
 from pathlib import Path
+
+import requests
 
 # Add metdata package to the python path
 LIB_DIR = Path(__file__).parent.parent.resolve()

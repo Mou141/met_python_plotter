@@ -1,16 +1,19 @@
 """Gets the daily forecast for a location and plots the maximum day and minimum night temperatures."""
 
-import sys, argparse, requests
+import argparse
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import requests
 
 # Add the metdata package location to the python path
 LIB_PATH = Path(__file__).parent.parent.resolve()
 sys.path.append(str(LIB_PATH))
 
-from metdata import METDataPoint, Resolution, Forecast, Period
 from datetime import date
+
+from metdata import Forecast, METDataPoint, Period, Resolution
 
 
 def parse_args() -> tuple[str, int]:

@@ -1,7 +1,9 @@
 """Utility functions for loading an API key from file and saving it to file."""
-from .metdatapoint import METDataPoint
+import json
+import typing
 from pathlib import Path
-import json, typing
+
+from .metdatapoint import METDataPoint
 
 __all__ = [
     "from_txt_file",

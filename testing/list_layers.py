@@ -1,7 +1,9 @@
 """Lists all available layers of the specified type."""
-import sys, argparse, requests
-
+import argparse
+import sys
 from pathlib import Path
+
+import requests
 
 # Add metdata package to the python path
 LIB_DIR = Path(__file__).parent.parent.resolve()

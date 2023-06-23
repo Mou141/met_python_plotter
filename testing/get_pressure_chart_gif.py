@@ -1,7 +1,10 @@
 """Downloads the pressure charts and then saves them as an animated GIF."""
-import sys, argparse, typing, requests
-
+import argparse
+import sys
+import typing
 from pathlib import Path
+
+import requests
 
 # Add metdata package to the python path
 LIB_DIR = Path(__file__).parent.parent.resolve()

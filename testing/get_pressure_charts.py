@@ -1,6 +1,6 @@
 """Gets all pressure charts and saves them to file."""
-import sys, argparse
-
+import argparse
+import sys
 from pathlib import Path
 
 # Add metdata package to the python path

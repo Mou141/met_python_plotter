@@ -1,7 +1,9 @@
 """Gets the most recent forecast for a specified location and saves it."""
+import argparse
+import json
+import sys
+from datetime import date, datetime, timezone
 from pathlib import Path
-import sys, json, argparse
-from datetime import datetime, date, timezone
 
 # Add the directory containing the metdata package to the python path
 _LIB_DIR = Path(__file__).parent.parent.resolve()
